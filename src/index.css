@@ -2700,6 +2700,11 @@ video {
     padding: 12px;
   }
 
+  .video-lightbox-panel {
+    border-radius: 12px;
+    max-width: min(94vw, 560px);
+  }
+
   .video-lightbox-head {
     padding: 10px 10px 8px;
   }
@@ -2716,8 +2721,23 @@ video {
     padding: 8px;
   }
 
+  .video-lightbox-player {
+    max-height: calc(100svh - 136px);
+    overflow: hidden;
+  }
+
   .video-lightbox-player video {
-    max-height: calc(100vh - 96px);
+    max-height: min(52svh, calc(100svh - 182px));
+    object-fit: contain;
+  }
+
+  .photo-lightbox-panel {
+    max-width: min(94vw, 560px);
+  }
+
+  .photo-lightbox-body img {
+    max-height: min(68svh, calc(100svh - 172px));
+    object-fit: contain;
   }
 
   .container,
