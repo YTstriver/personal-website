@@ -2620,27 +2620,16 @@ video {
   }
 
   .hero-works-stage .works-showcase-stack {
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    height: auto;
+    height: clamp(480px, 62svh, 620px);
     width: 100%;
   }
 
-  .hero-works-stage .works-showcase-flip-card {
-    filter: none !important;
-    inset: auto;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    position: relative;
-    transform: none !important;
-    width: auto;
-    z-index: auto !important;
+  .hero-works-stage .works-showcase-page {
+    padding: 8px;
   }
 
-  .hero-works-stage .works-showcase-card {
-    flex: none;
-    min-height: 0;
+  .hero-works-stage .works-showcase-grid {
+    gap: 8px;
   }
 
   .hero-works-stage .works-showcase-media {
@@ -2653,11 +2642,6 @@ video {
   }
 
   .hero-works-stage .works-showcase-info p {
-    display: none;
-  }
-
-  .hero-works-stage .works-showcase-controls,
-  .hero-works-stage .works-showcase-gesture-tip {
     display: none;
   }
 
@@ -2734,10 +2718,6 @@ video {
   .works-showcase-stack {
     height: clamp(420px, 56vh, 540px);
     width: 100%;
-  }
-
-  .hero-works-stage .works-showcase-stack {
-    height: auto;
   }
 
   .works-showcase-grid {
@@ -2900,39 +2880,61 @@ video {
 
   .contact-content {
     max-width: min(100%, 96vw);
-    padding: 64px 14px max(112px, calc(env(safe-area-inset-bottom) + 84px));
+    padding:
+      64px
+      calc(14px + env(safe-area-inset-left))
+      max(120px, calc(env(safe-area-inset-bottom) + 92px))
+      calc(14px + env(safe-area-inset-right));
   }
 
   .contact-content .contact-manifesto-line {
-    font-size: clamp(0.88rem, 4.2vw, 1.06rem);
-    line-height: 1.54;
+    font-size: clamp(0.92rem, 3.85vw, 1.04rem);
+    line-height: 1.62;
+    letter-spacing: 0.01em;
     max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .contact-content .contact-manifesto-line + .contact-manifesto-line {
-    margin-top: 8px;
+    margin-top: 10px;
+  }
+
+  .contact-content .contact-manifesto-line-primary {
+    font-size: clamp(1.04rem, 4.65vw, 1.24rem);
+    line-height: 1.5;
   }
 
   .contact-direct-info {
-    margin-top: 18px;
-    max-width: calc(100vw - 28px);
-    padding: 12px;
-    width: calc(100vw - 28px);
+    margin-top: 20px;
+    max-width: 100%;
+    padding: 12px 12px 14px;
+    width: 100%;
   }
 
   .contact-direct-row {
-    gap: 8px;
-    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 6px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .contact-direct-label {
     font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+
+  .contact-direct-values {
+    gap: 6px;
   }
 
   .contact-direct-link {
-    font-size: 0.86rem;
-    line-height: 1.5;
-    word-break: break-all;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .contact-direct-link-phone {
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
   }
 
   .hero-writer {
