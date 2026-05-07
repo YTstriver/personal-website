@@ -779,12 +779,14 @@ export function App() {
   const t = content[lang];
   const heroVideoSrc = resolveVideoSrc(heroVideo);
   const heroVideoPoster = resolvePosterSrc(heroVideo, heroPoster) ?? heroPoster;
+  const worksPages = chunkByPage(works, SHOWCASE_PAGE_SIZE);
+  const showcaseCount = isPhoneViewport ? worksPages.length : works.length;
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
   const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
   const isPhotoArchivePaused =
     isPhotoArchiveHovered || isPhotoArchiveDragging || Boolean(lightboxImage);
-  const useHeroAutoplayMode = prefersReducedMotion;
+  const useHeroAutoplayMode = isPhoneViewport || prefersReducedMotion;
 
   const renderVideoPreview = (params: {
     posterSrc?: string;
@@ -849,7 +851,6 @@ export function App() {
     const liteMedia = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
     const phoneMedia = window.matchMedia("(max-width: 760px)");
     const reducedMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     const syncViewportModes = () => {
       setIsLiteFloatingLines(liteMedia.matches);
       setIsPhoneViewport(phoneMedia.matches);
@@ -870,7 +871,6 @@ export function App() {
     const removeLite = addListener(liteMedia, syncViewportModes);
     const removePhone = addListener(phoneMedia, syncViewportModes);
     const removeReduced = addListener(reducedMedia, syncViewportModes);
-
     return () => {
       removeLite();
       removePhone();
@@ -1173,6 +1173,14 @@ export function App() {
   }, [activeShowcaseIndex]);
 
   useEffect(() => {
+    const maxIndex = Math.max(showcaseCount - 1, 0);
+    if (activeShowcaseIndexRef.current > maxIndex) {
+      activeShowcaseIndexRef.current = maxIndex;
+      setActiveShowcaseIndex(maxIndex);
+    }
+  }, [showcaseCount]);
+
+  useEffect(() => {
     activeUrbanIndexRef.current = activeUrbanIndex;
   }, [activeUrbanIndex]);
 
@@ -1229,7 +1237,7 @@ export function App() {
     let stepLock = false;
     let unlockTimer: number | null = null;
     const lockDurationMs = viewport.clientWidth >= 960 ? 460 : 540;
-    const maxIndex = Math.max(works.length - 1, 0);
+    const maxIndex = Math.max(showcaseCount - 1, 0);
 
     const stepWorksIndex = (direction: number) => {
       if (direction === 0) return;
@@ -1363,7 +1371,7 @@ export function App() {
       window.removeEventListener("pointercancel", endPointer);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [showcaseCount]);
 
   useEffect(() => {
     const section = storySectionRef.current;
@@ -1999,7 +2007,6 @@ export function App() {
 
   const stackedRevealStep = 2.2;
 
-  const showcaseCount = works.length;
   const urbanCount = urbanPages.length;
   const bimCount = bimPages.length;
 
@@ -2045,7 +2052,7 @@ export function App() {
     if (chapterIndex === 0) {
       jumpToShowcaseIndex(0);
     } else if (chapterIndex === 3) {
-      jumpToShowcaseIndex(Math.min(works.length - 1, 1));
+      jumpToShowcaseIndex(Math.min(showcaseCount - 1, 1));
     }
   };
 
@@ -2292,71 +2299,145 @@ export function App() {
 
             <div className="works-showcase-track works-showcase-flip-track" ref={worksTrackViewportRef}>
               <ul className="works-showcase-list works-showcase-stack">
-                {works.map((work, index) => (
-                  <li
-                    key={work.id}
-                    className="works-showcase-card works-showcase-flip-card"
-                    data-active={index === activeShowcaseIndex ? "true" : "false"}
-                    style={getShowcaseCardStyle(index)}
-                    aria-hidden={index !== activeShowcaseIndex}
-                  >
-                    <figure
-                      className={
-                        work.mediaType === "embed"
-                          ? "works-showcase-media is-embed"
-                          : "works-showcase-media"
-                      }
-                    >
-                      {work.mediaType === "video" ? (
-                        <button
-                          className="video-preview-trigger"
-                          onClick={() => openVideoLightbox(work)}
-                          type="button"
-                          aria-label={
-                            lang === "zh"
-                              ? `打开《${work.title.zh}》并播放原声`
-                              : `Open ${work.title.en} with sound`
+                {isPhoneViewport
+                  ? worksPages.map((page, pageIndex) => (
+                      <li
+                        key={`works-page-${pageIndex}`}
+                        className="works-showcase-card works-showcase-flip-card works-showcase-page"
+                        data-active={pageIndex === activeShowcaseIndex ? "true" : "false"}
+                        style={getShowcaseCardStyle(pageIndex)}
+                        aria-hidden={pageIndex !== activeShowcaseIndex}
+                      >
+                        <div className="works-showcase-grid">
+                          {page.map((work) => (
+                            <article key={work.id} className="works-showcase-grid-item">
+                              <figure
+                                className={
+                                  work.mediaType === "embed"
+                                    ? "works-showcase-media is-embed"
+                                    : "works-showcase-media"
+                                }
+                              >
+                                {work.mediaType === "video" ? (
+                                  <button
+                                    className="video-preview-trigger"
+                                    onClick={() => openVideoLightbox(work)}
+                                    type="button"
+                                    aria-label={
+                                      lang === "zh"
+                                        ? `打开《${work.title.zh}》并播放原声`
+                                        : `Open ${work.title.en} with sound`
+                                    }
+                                  >
+                                    {renderVideoPreview({
+                                      videoSrc: work.mediaSrc,
+                                      posterSrc: work.posterSrc,
+                                      previewTime: work.previewTime ?? 0,
+                                      title: work.title[lang],
+                                    })}
+                                    <span className="video-preview-hint">
+                                      {lang === "zh"
+                                        ? "点击放大并播放原声"
+                                        : "Click to expand with sound"}
+                                    </span>
+                                  </button>
+                                ) : work.mediaType === "embed" ? (
+                                  <iframe
+                                    src={work.embedSrc}
+                                    title={work.title[lang]}
+                                    loading="lazy"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen
+                                  />
+                                ) : (
+                                  <img src={work.mediaSrc} alt={work.title[lang]} loading="lazy" />
+                                )}
+                              </figure>
+                              <div className="works-showcase-info">
+                                <div className="works-showcase-meta">
+                                  <span>[{work.category[lang]}]</span>
+                                </div>
+                                <h3>{work.title[lang]}</h3>
+                                <p>{work.summary[lang]}</p>
+                                {work.mediaType === "embed" ? (
+                                  <p className="works-player-tip">
+                                    {lang === "zh"
+                                      ? "可在播放器设置中选择最高可用清晰度（受账号与片源限制）。"
+                                      : "Choose the highest available quality in player settings (depends on account and source)."}
+                                  </p>
+                                ) : null}
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </li>
+                    ))
+                  : works.map((work, index) => (
+                      <li
+                        key={work.id}
+                        className="works-showcase-card works-showcase-flip-card"
+                        data-active={index === activeShowcaseIndex ? "true" : "false"}
+                        style={getShowcaseCardStyle(index)}
+                        aria-hidden={index !== activeShowcaseIndex}
+                      >
+                        <figure
+                          className={
+                            work.mediaType === "embed"
+                              ? "works-showcase-media is-embed"
+                              : "works-showcase-media"
                           }
                         >
-                          {renderVideoPreview({
-                            videoSrc: work.mediaSrc,
-                            posterSrc: work.posterSrc,
-                            previewTime: work.previewTime ?? 0,
-                            title: work.title[lang],
-                          })}
-                          <span className="video-preview-hint">
-                            {lang === "zh" ? "点击放大并播放原声" : "Click to expand with sound"}
-                          </span>
-                        </button>
-                      ) : work.mediaType === "embed" ? (
-                        <iframe
-                          src={work.embedSrc}
-                          title={work.title[lang]}
-                          loading="lazy"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <img src={work.mediaSrc} alt={work.title[lang]} loading="lazy" />
-                      )}
-                    </figure>
-                    <div className="works-showcase-info">
-                      <div className="works-showcase-meta">
-                        <span>[{work.category[lang]}]</span>
-                      </div>
-                      <h3>{work.title[lang]}</h3>
-                      <p>{work.summary[lang]}</p>
-                      {work.mediaType === "embed" ? (
-                        <p className="works-player-tip">
-                          {lang === "zh"
-                            ? "可在播放器设置中选择最高可用清晰度（受账号与片源限制）。"
-                            : "Choose the highest available quality in player settings (depends on account and source)."}
-                        </p>
-                      ) : null}
-                    </div>
-                  </li>
-                ))}
+                          {work.mediaType === "video" ? (
+                            <button
+                              className="video-preview-trigger"
+                              onClick={() => openVideoLightbox(work)}
+                              type="button"
+                              aria-label={
+                                lang === "zh"
+                                  ? `打开《${work.title.zh}》并播放原声`
+                                  : `Open ${work.title.en} with sound`
+                              }
+                            >
+                              {renderVideoPreview({
+                                videoSrc: work.mediaSrc,
+                                posterSrc: work.posterSrc,
+                                previewTime: work.previewTime ?? 0,
+                                title: work.title[lang],
+                              })}
+                              <span className="video-preview-hint">
+                                {lang === "zh" ? "点击放大并播放原声" : "Click to expand with sound"}
+                              </span>
+                            </button>
+                          ) : work.mediaType === "embed" ? (
+                            <iframe
+                              src={work.embedSrc}
+                              title={work.title[lang]}
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              referrerPolicy="strict-origin-when-cross-origin"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <img src={work.mediaSrc} alt={work.title[lang]} loading="lazy" />
+                          )}
+                        </figure>
+                        <div className="works-showcase-info">
+                          <div className="works-showcase-meta">
+                            <span>[{work.category[lang]}]</span>
+                          </div>
+                          <h3>{work.title[lang]}</h3>
+                          <p>{work.summary[lang]}</p>
+                          {work.mediaType === "embed" ? (
+                            <p className="works-player-tip">
+                              {lang === "zh"
+                                ? "可在播放器设置中选择最高可用清晰度（受账号与片源限制）。"
+                                : "Choose the highest available quality in player settings (depends on account and source)."}
+                            </p>
+                          ) : null}
+                        </div>
+                      </li>
+                    ))}
               </ul>
             </div>
             <div
@@ -2368,20 +2449,35 @@ export function App() {
                 className="works-showcase-dots"
                 aria-label={lang === "zh" ? "作品分页" : "Showcase pagination"}
               >
-                {works.map((work, index) => (
-                  <button
-                    key={`works-dot-${work.id}`}
-                    className="works-showcase-dot"
-                    data-active={index === activeShowcaseIndex ? "true" : "false"}
-                    type="button"
-                    onClick={() => jumpToShowcaseIndex(index)}
-                    aria-label={
-                      lang === "zh"
-                        ? `切换到第 ${index + 1} 条作品`
-                        : `Switch to work ${index + 1}`
-                    }
-                  />
-                ))}
+                {isPhoneViewport
+                  ? worksPages.map((_, index) => (
+                      <button
+                        key={`works-dot-page-${index}`}
+                        className="works-showcase-dot"
+                        data-active={index === activeShowcaseIndex ? "true" : "false"}
+                        type="button"
+                        onClick={() => jumpToShowcaseIndex(index)}
+                        aria-label={
+                          lang === "zh"
+                            ? `切换到第 ${index + 1} 页作品`
+                            : `Switch to showcase page ${index + 1}`
+                        }
+                      />
+                    ))
+                  : works.map((work, index) => (
+                      <button
+                        key={`works-dot-${work.id}`}
+                        className="works-showcase-dot"
+                        data-active={index === activeShowcaseIndex ? "true" : "false"}
+                        type="button"
+                        onClick={() => jumpToShowcaseIndex(index)}
+                        aria-label={
+                          lang === "zh"
+                            ? `切换到第 ${index + 1} 条作品`
+                            : `Switch to work ${index + 1}`
+                        }
+                      />
+                    ))}
               </div>
             </div>
             <p className="works-showcase-gesture-tip">
