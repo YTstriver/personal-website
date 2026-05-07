@@ -1629,6 +1629,51 @@ export function App() {
       section.style.setProperty("--works-progress", getWorksProgress(sectionProgress).toFixed(4));
     };
 
+    // Mobile/reduced-motion: do not scrub currentTime on every scroll tick.
+    // We keep preload=auto and switch to smooth muted playback for stability.
+    if (isLiteFloatingLines) {
+      const safePlay = () => {
+        const maybePromise = video.play();
+        if (maybePromise && typeof maybePromise.then === "function") {
+          maybePromise.catch(() => {
+            // Some webviews may still block autoplay until first gesture.
+          });
+        }
+      };
+
+      const onLoadedMetadata = () => {
+        if (destroyed) return;
+        syncWorksState(0);
+        video.currentTime = 0;
+        safePlay();
+      };
+
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          video.pause();
+        } else {
+          safePlay();
+        }
+      };
+
+      syncWorksState(0);
+      video.loop = true;
+      video.pause();
+      if (video.readyState >= 1) {
+        onLoadedMetadata();
+      } else {
+        video.addEventListener("loadedmetadata", onLoadedMetadata);
+      }
+      document.addEventListener("visibilitychange", onVisibilityChange);
+
+      return () => {
+        destroyed = true;
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        video.removeEventListener("loadedmetadata", onLoadedMetadata);
+        video.pause();
+      };
+    }
+
     const commitTime = (nextTime: number) => {
       const clamped = clamp(nextTime, 0, duration);
       if (Math.abs(clamped - lastCommitted) < seekThreshold) {
@@ -1667,6 +1712,7 @@ export function App() {
       video.pause();
     };
 
+    video.loop = false;
     video.pause();
     if (video.readyState >= 1) {
       onLoadedMetadata();
@@ -1744,7 +1790,7 @@ export function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       video.removeEventListener("loadedmetadata", onLoadedMetadata);
     };
-  }, []);
+  }, [isLiteFloatingLines]);
 
   const openLightboxVideo = (videoSrc: string, title: string) => {
     setLightboxVideo({
