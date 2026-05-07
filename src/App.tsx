@@ -1596,7 +1596,8 @@ export function App() {
     let duration = 0;
     let lastCommitted = -1;
     const tailGuard = 0.03;
-    const seekThreshold = 1 / 240;
+    const seekThreshold = 1 / 48;
+    const minSeekIntervalMs = 1000 / 24;
     const scrubCurve = 1.15;
     const scrubViewportFactor = 0.8;
     const scrubSpan = 0.9;
@@ -1674,9 +1675,17 @@ export function App() {
       };
     }
 
-    const commitTime = (nextTime: number) => {
+    let lastSeekAt = 0;
+    const commitTime = (nextTime: number, force = false) => {
       const clamped = clamp(nextTime, 0, duration);
       if (Math.abs(clamped - lastCommitted) < seekThreshold) {
+        return;
+      }
+
+      const now = performance.now();
+      const deltaFromCurrent = Math.abs(video.currentTime - clamped);
+      const isHighFrequencySeek = now - lastSeekAt < minSeekIntervalMs;
+      if (!force && isHighFrequencySeek && deltaFromCurrent < 0.08) {
         return;
       }
 
@@ -1692,6 +1701,7 @@ export function App() {
           video.currentTime = clamped;
         }
         lastCommitted = clamped;
+        lastSeekAt = now;
       } catch {
         // Ignore occasional seek errors during rapid scroll bursts.
       }
@@ -1704,7 +1714,7 @@ export function App() {
       targetTime = getTargetTime(sectionProgress);
       renderedTime = targetTime;
       syncWorksState(sectionProgress);
-      commitTime(renderedTime);
+      commitTime(renderedTime, true);
     };
 
     const onLoadedMetadata = () => {
@@ -1750,7 +1760,7 @@ export function App() {
         }
 
         commitTime(renderedTime);
-        shouldContinue = Math.abs(targetTime - renderedTime) > 0.0018;
+        shouldContinue = Math.abs(targetTime - renderedTime) > 0.012;
       }
 
       if (shouldContinue) {
@@ -1764,7 +1774,7 @@ export function App() {
       if (duration <= 0) return;
       targetTime = getTargetTime(sectionProgress);
       renderedTime = targetTime;
-      commitTime(renderedTime);
+      commitTime(renderedTime, true);
     };
 
     const onScroll = () => {
