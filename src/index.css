@@ -35,7 +35,10 @@
 }
 
 html {
+  overscroll-behavior-y: contain;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -44,6 +47,7 @@ body {
   font-family: var(--font-body);
   font-weight: 300;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -973,10 +977,7 @@ video {
 }
 
 .works-showcase-nav-side {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 8;
+  display: none;
 }
 
 .works-showcase-nav-side.is-prev {
@@ -1719,6 +1720,14 @@ video {
   z-index: 2;
 }
 
+.photo-belt-stage.is-mobile-scroll {
+  scroll-snap-type: x proximity;
+}
+
+.photo-belt-stage.is-mobile-scroll .photo-belt-item {
+  scroll-snap-align: start;
+}
+
 .photo-belt-stage::-webkit-scrollbar {
   display: none;
 }
@@ -1771,6 +1780,10 @@ video {
   gap: var(--photo-belt-gap);
   width: max-content;
   will-change: transform;
+}
+
+.photo-belt-track.is-mobile-scroll {
+  animation: none;
 }
 
 .photo-belt-track.is-paused {
@@ -2245,6 +2258,10 @@ video {
 
 .contact-decrypt-char {
   color: rgba(244, 250, 255, 0.97);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
 
 .contact-decrypt-char-encrypted {
@@ -2576,12 +2593,76 @@ video {
 
 @media (max-width: 760px) {
   .hero-scrub {
-    height: 102vh;
+    height: 100svh;
   }
 
   .hero-works-stage {
-    min-height: 232vh;
-    padding-bottom: clamp(18px, 3vh, 32px);
+    min-height: auto;
+    padding-bottom: clamp(12px, 2.2vh, 20px);
+  }
+
+  .hero-works-pin {
+    align-items: flex-start;
+    height: auto;
+    min-height: 100svh;
+    padding: 66px 0 18px;
+    position: relative;
+    top: auto;
+  }
+
+  .hero-works-stage .works-showcase-layer {
+    padding: 6px 14px 14px;
+  }
+
+  .hero-works-stage .works-showcase-track {
+    margin-top: 12px;
+    overflow: visible;
+  }
+
+  .hero-works-stage .works-showcase-stack {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    width: 100%;
+  }
+
+  .hero-works-stage .works-showcase-flip-card {
+    filter: none !important;
+    inset: auto;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: relative;
+    transform: none !important;
+    width: auto;
+    z-index: auto !important;
+  }
+
+  .hero-works-stage .works-showcase-card {
+    flex: none;
+    min-height: 0;
+  }
+
+  .hero-works-stage .works-showcase-media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero-works-stage .works-showcase-info {
+    min-height: 0;
+    padding: 8px 9px 10px;
+  }
+
+  .hero-works-stage .works-showcase-info p {
+    display: none;
+  }
+
+  .hero-works-stage .works-showcase-controls,
+  .hero-works-stage .works-showcase-gesture-tip {
+    display: none;
+  }
+
+  .works-showcase-nav-side {
+    display: none;
   }
 
   .works-intro-layer {
@@ -2656,7 +2737,7 @@ video {
   }
 
   .hero-works-stage .works-showcase-stack {
-    height: clamp(400px, 52vh, 500px);
+    height: auto;
   }
 
   .works-showcase-grid {
@@ -2811,29 +2892,47 @@ video {
     font-size: 0.9rem;
   }
 
+  .contact-section {
+    align-items: stretch;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .contact-content {
+    max-width: min(100%, 96vw);
+    padding: 64px 14px max(112px, calc(env(safe-area-inset-bottom) + 84px));
+  }
+
   .contact-content .contact-manifesto-line {
-    font-size: clamp(0.92rem, 4.5vw, 1.18rem);
+    font-size: clamp(0.88rem, 4.2vw, 1.06rem);
     line-height: 1.54;
+    max-width: 100%;
   }
 
   .contact-content .contact-manifesto-line + .contact-manifesto-line {
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
   .contact-direct-info {
-    margin-top: 20px;
-    max-width: min(420px, 92vw);
-    padding: 12px 14px;
-    width: fit-content;
+    margin-top: 18px;
+    max-width: calc(100vw - 28px);
+    padding: 12px;
+    width: calc(100vw - 28px);
   }
 
   .contact-direct-row {
-    gap: 10px;
-    grid-template-columns: 52px 1fr;
+    gap: 8px;
+    grid-template-columns: 48px minmax(0, 1fr);
   }
 
   .contact-direct-label {
     font-size: 0.72rem;
+  }
+
+  .contact-direct-link {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    word-break: break-all;
   }
 
   .hero-writer {

@@ -1,7 +1,5 @@
 import {
   Building2,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
   Film,
   PlaneTakeoff,
@@ -678,6 +676,7 @@ const SHOWCASE_PAGE_SIZE = 4;
 const strictTrafficMode = import.meta.env.VITE_STRICT_TRAFFIC_MODE !== "false";
 const ossVideoBaseUrl = (import.meta.env.VITE_OSS_VIDEO_BASE_URL ?? "").trim();
 const ossVideoPosterBaseUrl = (import.meta.env.VITE_OSS_VIDEO_POSTER_BASE_URL ?? "").trim();
+const ossPhotoBaseUrl = (import.meta.env.VITE_OSS_PHOTO_BASE_URL ?? "").trim();
 
 const stripLeadingSlash = (value: string) => value.replace(/^\/+/, "");
 const stripTrailingSlash = (value: string) => value.replace(/\/+$/, "");
@@ -714,6 +713,11 @@ const resolvePosterSrc = (videoPath: string, posterPath?: string) => {
   return resolvePosterFromVideo(videoPath);
 };
 
+const resolvePhotoSrc = (sourcePath: string) => {
+  if (!ossPhotoBaseUrl || isAbsoluteUrl(sourcePath)) return sourcePath;
+  return joinBaseAndPath(ossPhotoBaseUrl, stripLeadingSlash(sourcePath));
+};
+
 const chunkByPage = <T,>(items: T[], pageSize: number) => {
   if (pageSize <= 0) return [items];
   const pages: T[][] = [];
@@ -732,6 +736,8 @@ export function App() {
   const [isUrbanInView, setIsUrbanInView] = useState(false);
   const [isBimInView, setIsBimInView] = useState(false);
   const [isLiteFloatingLines, setIsLiteFloatingLines] = useState(false);
+  const [isPhoneViewport, setIsPhoneViewport] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [lightboxVideo, setLightboxVideo] = useState<{
     src: string;
     title: string;
@@ -742,6 +748,7 @@ export function App() {
   } | null>(null);
   const [isPhotoArchiveHovered, setIsPhotoArchiveHovered] = useState(false);
   const [isPhotoArchiveDragging, setIsPhotoArchiveDragging] = useState(false);
+  const [failedPreviewPosters, setFailedPreviewPosters] = useState<Record<string, true>>({});
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isBackgroundMusicEnabled, setIsBackgroundMusicEnabled] = useState(() => {
     if (typeof window === "undefined") return shouldAutoplayBackgroundMusic;
@@ -761,6 +768,7 @@ export function App() {
   const bimSectionRef = useRef<HTMLElement>(null);
   const bimTrackViewportRef = useRef<HTMLDivElement>(null);
   const musicSectionRef = useRef<HTMLElement>(null);
+  const photoBeltStageRef = useRef<HTMLDivElement>(null);
   const worksStageRef = useRef<HTMLElement>(null);
   const worksTrackViewportRef = useRef<HTMLDivElement>(null);
   const backgroundMusicRef = useRef<HTMLAudioElement>(null);
@@ -776,6 +784,7 @@ export function App() {
   const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
   const isPhotoArchivePaused =
     isPhotoArchiveHovered || isPhotoArchiveDragging || Boolean(lightboxImage);
+  const useHeroAutoplayMode = prefersReducedMotion;
 
   const renderVideoPreview = (params: {
     posterSrc?: string;
@@ -785,10 +794,28 @@ export function App() {
   }) => {
     const resolvedVideoSrc = resolveVideoSrc(params.videoSrc);
     const resolvedPosterSrc = resolvePosterSrc(params.videoSrc, params.posterSrc);
+    const isPosterBroken = Boolean(
+      resolvedPosterSrc && failedPreviewPosters[resolvedPosterSrc]
+    );
 
     if (strictTrafficMode) {
-      if (resolvedPosterSrc) {
-        return <img src={resolvedPosterSrc} alt={params.title} loading="lazy" />;
+      if (resolvedPosterSrc && !isPosterBroken) {
+        return (
+          <img
+            src={resolvedPosterSrc}
+            alt={params.title}
+            loading="lazy"
+            onError={() =>
+              setFailedPreviewPosters((prev) => {
+                if (prev[resolvedPosterSrc]) return prev;
+                return {
+                  ...prev,
+                  [resolvedPosterSrc]: true,
+                };
+              })
+            }
+          />
+        );
       }
       return (
         <div className="video-preview-fallback" aria-hidden="true">
@@ -819,19 +846,102 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
-    const syncLiteMode = () => setIsLiteFloatingLines(media.matches);
+    const liteMedia = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
+    const phoneMedia = window.matchMedia("(max-width: 760px)");
+    const reducedMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    syncLiteMode();
+    const syncViewportModes = () => {
+      setIsLiteFloatingLines(liteMedia.matches);
+      setIsPhoneViewport(phoneMedia.matches);
+      setPrefersReducedMotion(reducedMedia.matches);
+    };
 
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", syncLiteMode);
-      return () => media.removeEventListener("change", syncLiteMode);
-    }
+    syncViewportModes();
 
-    media.addListener(syncLiteMode);
-    return () => media.removeListener(syncLiteMode);
+    const addListener = (mediaQuery: MediaQueryList, listener: () => void) => {
+      if (typeof mediaQuery.addEventListener === "function") {
+        mediaQuery.addEventListener("change", listener);
+        return () => mediaQuery.removeEventListener("change", listener);
+      }
+      mediaQuery.addListener(listener);
+      return () => mediaQuery.removeListener(listener);
+    };
+
+    const removeLite = addListener(liteMedia, syncViewportModes);
+    const removePhone = addListener(phoneMedia, syncViewportModes);
+    const removeReduced = addListener(reducedMedia, syncViewportModes);
+
+    return () => {
+      removeLite();
+      removePhone();
+      removeReduced();
+    };
   }, []);
+
+  useEffect(() => {
+    if (!isPhoneViewport) return;
+
+    let startX = 0;
+    let startY = 0;
+    let blockingPullRefresh = false;
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      blockingPullRefresh = false;
+    };
+
+    const shouldSkipTarget = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) return false;
+      return Boolean(
+        target.closest(
+          "input, textarea, select, .video-lightbox, .photo-lightbox, .photo-belt-stage, .works-showcase-track"
+        )
+      );
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1 || !event.cancelable) return;
+      if (shouldSkipTarget(event.target)) return;
+
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      if (Math.abs(deltaY) <= Math.abs(deltaX)) return;
+      if (Math.abs(deltaY) < 4) return;
+
+      const rootScrollTop = document.scrollingElement?.scrollTop ?? 0;
+      const currentTop = Math.max(window.scrollY, rootScrollTop);
+
+      if (currentTop <= 2 && deltaY > 0) {
+        blockingPullRefresh = true;
+        event.preventDefault();
+        return;
+      }
+
+      if (blockingPullRefresh) {
+        event.preventDefault();
+      }
+    };
+
+    const onTouchEnd = () => {
+      blockingPullRefresh = false;
+    };
+
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    document.addEventListener("touchend", onTouchEnd, { passive: true });
+    document.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove", onTouchMove);
+      document.removeEventListener("touchend", onTouchEnd);
+      document.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [isPhoneViewport]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1274,6 +1384,79 @@ export function App() {
   }, []);
 
   useEffect(() => {
+    const stage = photoBeltStageRef.current;
+    if (!stage) return;
+
+    const beginDrag = () => setIsPhotoArchiveDragging(true);
+    const endDrag = () => setIsPhotoArchiveDragging(false);
+
+    stage.addEventListener("touchstart", beginDrag, { passive: true });
+    stage.addEventListener("touchend", endDrag, { passive: true });
+    stage.addEventListener("touchcancel", endDrag, { passive: true });
+    stage.addEventListener("pointerdown", beginDrag, { passive: true });
+    window.addEventListener("pointerup", endDrag, { passive: true });
+    window.addEventListener("pointercancel", endDrag, { passive: true });
+
+    return () => {
+      stage.removeEventListener("touchstart", beginDrag);
+      stage.removeEventListener("touchend", endDrag);
+      stage.removeEventListener("touchcancel", endDrag);
+      stage.removeEventListener("pointerdown", beginDrag);
+      window.removeEventListener("pointerup", endDrag);
+      window.removeEventListener("pointercancel", endDrag);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isPhoneViewport) return;
+    const stage = photoBeltStageRef.current;
+    if (!stage) return;
+
+    let rafId = 0;
+    let previousTs = performance.now();
+    const speedPxPerSec = 18;
+
+    const getLoopEdge = () => stage.scrollWidth / 2;
+
+    const normalizeScroll = () => {
+      const loopEdge = getLoopEdge();
+      if (!Number.isFinite(loopEdge) || loopEdge <= 0) return;
+      if (stage.scrollLeft >= loopEdge) {
+        stage.scrollLeft -= loopEdge;
+      } else if (stage.scrollLeft < 0) {
+        stage.scrollLeft += loopEdge;
+      }
+    };
+
+    const kickstart = () => {
+      const loopEdge = getLoopEdge();
+      if (!Number.isFinite(loopEdge) || loopEdge <= 0) return;
+      if (stage.scrollLeft <= 1) {
+        stage.scrollLeft = loopEdge * 0.5;
+      }
+    };
+
+    const tick = (timestamp: number) => {
+      const deltaSec = Math.min((timestamp - previousTs) / 1000, 0.08);
+      previousTs = timestamp;
+
+      if (!isPhotoArchivePaused && stage.scrollWidth > stage.clientWidth + 2) {
+        stage.scrollLeft += speedPxPerSec * deltaSec;
+        normalizeScroll();
+      }
+
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    kickstart();
+    rafId = window.requestAnimationFrame(tick);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+    };
+  }, [isPhoneViewport, isPhotoArchivePaused]);
+
+  useEffect(() => {
     const section = bimSectionRef.current;
     if (!section) return;
 
@@ -1632,7 +1815,7 @@ export function App() {
 
     // Mobile/reduced-motion: do not scrub currentTime on every scroll tick.
     // We keep preload=auto and switch to smooth muted playback for stability.
-    if (isLiteFloatingLines) {
+    if (useHeroAutoplayMode) {
       const safePlay = () => {
         const maybePromise = video.play();
         if (maybePromise && typeof maybePromise.then === "function") {
@@ -1800,7 +1983,7 @@ export function App() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       video.removeEventListener("loadedmetadata", onLoadedMetadata);
     };
-  }, [isLiteFloatingLines]);
+  }, [useHeroAutoplayMode]);
 
   const openLightboxVideo = (videoSrc: string, title: string) => {
     setLightboxVideo({
@@ -1819,22 +2002,11 @@ export function App() {
   const showcaseCount = works.length;
   const urbanCount = urbanPages.length;
   const bimCount = bimPages.length;
-  const isAtFirstShowcase = activeShowcaseIndex <= 0;
-  const isAtLastShowcase = activeShowcaseIndex >= showcaseCount - 1;
-  const isAtFirstUrban = activeUrbanIndex <= 0;
-  const isAtLastUrban = activeUrbanIndex >= urbanCount - 1;
-  const isAtFirstBim = activeBimIndex <= 0;
-  const isAtLastBim = activeBimIndex >= bimCount - 1;
 
   const jumpToShowcaseIndex = (nextIndex: number) => {
     const clampedIndex = Math.min(Math.max(nextIndex, 0), showcaseCount - 1);
     activeShowcaseIndexRef.current = clampedIndex;
     setActiveShowcaseIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
-  };
-
-  const shiftShowcaseIndex = (direction: number) => {
-    if (direction === 0) return;
-    jumpToShowcaseIndex(activeShowcaseIndexRef.current + direction);
   };
 
   const jumpToUrbanIndex = (nextIndex: number) => {
@@ -1843,20 +2015,10 @@ export function App() {
     setActiveUrbanIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
   };
 
-  const shiftUrbanIndex = (direction: number) => {
-    if (direction === 0) return;
-    jumpToUrbanIndex(activeUrbanIndexRef.current + direction);
-  };
-
   const jumpToBimIndex = (nextIndex: number) => {
     const clampedIndex = Math.min(Math.max(nextIndex, 0), bimCount - 1);
     activeBimIndexRef.current = clampedIndex;
     setActiveBimIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
-  };
-
-  const shiftBimIndex = (direction: number) => {
-    if (direction === 0) return;
-    jumpToBimIndex(activeBimIndexRef.current + direction);
   };
 
   const scrollToSection = (section: HTMLElement, offset = 96) => {
@@ -2010,6 +2172,12 @@ export function App() {
             ref={heroVideoRef}
             muted
             playsInline
+            autoPlay={useHeroAutoplayMode}
+            loop={useHeroAutoplayMode}
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            x5-video-player-type="h5-page"
+            x5-video-player-fullscreen="false"
             preload="auto"
             poster={heroVideoPoster}
             src={heroVideoSrc}
@@ -2190,24 +2358,6 @@ export function App() {
                   </li>
                 ))}
               </ul>
-              <button
-                className="works-showcase-nav works-showcase-nav-side is-prev"
-                type="button"
-                onClick={() => shiftShowcaseIndex(-1)}
-                disabled={isAtFirstShowcase}
-                aria-label={lang === "zh" ? "上一条作品" : "Previous work"}
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                className="works-showcase-nav works-showcase-nav-side is-next"
-                type="button"
-                onClick={() => shiftShowcaseIndex(1)}
-                disabled={isAtLastShowcase}
-                aria-label={lang === "zh" ? "下一条作品" : "Next work"}
-              >
-                <ChevronRight size={18} />
-              </button>
             </div>
             <div
               className="works-showcase-controls"
@@ -2236,8 +2386,12 @@ export function App() {
             </div>
             <p className="works-showcase-gesture-tip">
               {lang === "zh"
-                ? "使用左右箭头、按钮或横向拖拽翻页。"
-                : "Flip with arrow keys, buttons, or horizontal drag."}
+                ? isLiteFloatingLines
+                  ? "左右滑动即可浏览，点击视频可放大播放。"
+                  : "可点分页圆点或横向拖拽翻页。"
+                : isLiteFloatingLines
+                  ? "Swipe horizontally to browse. Tap video to expand."
+                  : "Use page dots or horizontal drag to browse."}
             </p>
           </div>
         </div>
@@ -2347,24 +2501,6 @@ export function App() {
                 </li>
               ))}
             </ul>
-            <button
-              className="works-showcase-nav works-showcase-nav-side is-prev"
-              type="button"
-              onClick={() => shiftUrbanIndex(-1)}
-              disabled={isAtFirstUrban}
-              aria-label={lang === "zh" ? "上一页城市作品" : "Previous urban page"}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              className="works-showcase-nav works-showcase-nav-side is-next"
-              type="button"
-              onClick={() => shiftUrbanIndex(1)}
-              disabled={isAtLastUrban}
-              aria-label={lang === "zh" ? "下一页城市作品" : "Next urban page"}
-            >
-              <ChevronRight size={18} />
-            </button>
           </div>
           <div
             className="works-showcase-controls"
@@ -2393,8 +2529,12 @@ export function App() {
           </div>
           <p className="works-showcase-gesture-tip">
             {lang === "zh"
-              ? "使用左右箭头、按钮或横向拖拽翻页。"
-              : "Flip with arrow keys, buttons, or horizontal drag."}
+              ? isLiteFloatingLines
+                ? "左右滑动即可浏览，点击视频可放大播放。"
+                : "可点分页圆点或横向拖拽翻页。"
+              : isLiteFloatingLines
+                ? "Swipe horizontally to browse. Tap video to expand."
+                : "Use page dots or horizontal drag to browse."}
           </p>
         </div>
       </section>
@@ -2503,24 +2643,6 @@ export function App() {
                 </li>
               ))}
             </ul>
-            <button
-              className="works-showcase-nav works-showcase-nav-side is-prev"
-              type="button"
-              onClick={() => shiftBimIndex(-1)}
-              disabled={isAtFirstBim}
-              aria-label={lang === "zh" ? "上一页BIM案例" : "Previous BIM page"}
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              className="works-showcase-nav works-showcase-nav-side is-next"
-              type="button"
-              onClick={() => shiftBimIndex(1)}
-              disabled={isAtLastBim}
-              aria-label={lang === "zh" ? "下一页BIM案例" : "Next BIM page"}
-            >
-              <ChevronRight size={18} />
-            </button>
           </div>
           <div
             className="works-showcase-controls"
@@ -2549,8 +2671,12 @@ export function App() {
           </div>
           <p className="works-showcase-gesture-tip">
             {lang === "zh"
-              ? "使用左右箭头、按钮或横向拖拽翻页。"
-              : "Flip with arrow keys, buttons, or horizontal drag."}
+              ? isLiteFloatingLines
+                ? "左右滑动即可浏览，点击视频可放大播放。"
+                : "可点分页圆点或横向拖拽翻页。"
+              : isLiteFloatingLines
+                ? "Swipe horizontally to browse. Tap video to expand."
+                : "Use page dots or horizontal drag to browse."}
           </p>
         </div>
       </section>
@@ -2585,15 +2711,14 @@ export function App() {
 
           <div className="photo-archive-panel">
             <div
-              className={`photo-belt-stage ${isPhotoArchiveDragging ? "is-dragging" : ""}`}
+              className={`photo-belt-stage ${isPhotoArchiveDragging ? "is-dragging" : ""} ${
+                isPhoneViewport ? "is-mobile-scroll" : ""
+              }`}
+              ref={photoBeltStageRef}
               role="list"
               aria-label={lang === "zh" ? "武汉照片档案" : "Wuhan photo archive"}
               onMouseEnter={() => setIsPhotoArchiveHovered(true)}
               onMouseLeave={() => setIsPhotoArchiveHovered(false)}
-              onPointerDown={() => setIsPhotoArchiveDragging(true)}
-              onPointerUp={() => setIsPhotoArchiveDragging(false)}
-              onPointerCancel={() => setIsPhotoArchiveDragging(false)}
-              onPointerLeave={() => setIsPhotoArchiveDragging(false)}
               onFocusCapture={() => setIsPhotoArchiveHovered(true)}
               onBlurCapture={(event) => {
                 const nextTarget = event.relatedTarget as Node | null;
@@ -2602,7 +2727,11 @@ export function App() {
                 }
               }}
             >
-              <div className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""}`}>
+              <div
+                className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""} ${
+                  isPhoneViewport ? "is-mobile-scroll" : ""
+                }`}
+              >
                 {photoBeltItems.map((photo, index) => (
                   <article
                     key={`${photo.id}-${index}`}
@@ -2615,7 +2744,7 @@ export function App() {
                       onClick={() => {
                         setLightboxVideo(null);
                         setLightboxImage({
-                          src: photo.src,
+                          src: resolvePhotoSrc(photo.src),
                           title: photo.title[lang],
                         });
                       }}
@@ -2626,7 +2755,11 @@ export function App() {
                       }
                     >
                       <figure className="photo-belt-media">
-                        <img src={photo.src} alt={photo.title[lang]} loading="lazy" />
+                        <img
+                          src={resolvePhotoSrc(photo.src)}
+                          alt={photo.title[lang]}
+                          loading={index < 8 ? "eager" : "lazy"}
+                        />
                       </figure>
                     </button>
                   </article>
@@ -2675,6 +2808,7 @@ export function App() {
               className="contact-decrypt-char"
               encryptedClassName="contact-decrypt-char contact-decrypt-char-encrypted"
               parentClassName="contact-decrypt-parent"
+              wrapperDisplay="inline"
               animateOn="view"
             />
           </h2>
@@ -2692,6 +2826,7 @@ export function App() {
               className="contact-decrypt-char"
               encryptedClassName="contact-decrypt-char contact-decrypt-char-encrypted"
               parentClassName="contact-decrypt-parent"
+              wrapperDisplay="inline"
               animateOn="view"
             />
           </p>

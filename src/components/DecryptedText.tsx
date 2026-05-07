@@ -24,6 +24,7 @@ type DecryptedTextProps = {
   encryptedClassName?: string;
   animateOn?: AnimateOn;
   clickMode?: ClickMode;
+  wrapperDisplay?: "inline" | "inline-block";
 };
 
 const styles = {
@@ -38,7 +39,6 @@ const styles = {
     width: "1px",
   } as const,
   wrapper: {
-    display: "inline-block",
     whiteSpace: "pre-wrap",
   } as const,
 };
@@ -56,6 +56,7 @@ export default function DecryptedText({
   encryptedClassName = "",
   animateOn = "hover",
   clickMode = "once",
+  wrapperDisplay = "inline-block",
 }: DecryptedTextProps) {
   const [displayText, setDisplayText] = useState(text);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -384,7 +385,10 @@ export default function DecryptedText({
     <motion.span
       className={parentClassName}
       ref={containerRef}
-      style={styles.wrapper}
+      style={{
+        ...styles.wrapper,
+        display: wrapperDisplay,
+      }}
       {...animateProps}
     >
       <span style={styles.srOnly}>{displayText}</span>
