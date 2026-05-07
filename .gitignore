@@ -1,0 +1,14 @@
+node_modules
+dist
+.vercel
+.DS_Store
+.env
+.env.*
+!.env.production.example
+public/videos/*.mp4
+!public/videos/hero-loop.mp4
+!public/videos/hero-loop-scrub-hq.mp4
+!public/videos/hero-loop-hevc-original.mp4
+
+backups/
+public/videos/hero-loop-hevc-original.mp4
