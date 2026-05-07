@@ -669,7 +669,7 @@ const worksShowcaseChapters = [
   },
 ] as const;
 
-const heroVideo = "/videos/方块领域.mp4";
+const heroVideo = "/videos/hero.mp4";
 const heroPoster = "/images/hero_bg.jpeg";
 const backgroundMusicSrc = "/audio/kyden-tell-me-if-you-need-me.mp3";
 const backgroundMusicVolume = 0.32;
