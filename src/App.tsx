@@ -768,7 +768,7 @@ export function App() {
   const backgroundMusicUnlockPendingRef = useRef(false);
 
   const t = content[lang];
-  const heroVideoSrc = heroVideo;
+  const heroVideoSrc = resolveVideoSrc(heroVideo);
   const heroVideoPoster = resolvePosterSrc(heroVideo, heroPoster) ?? heroPoster;
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
