@@ -1,0 +1,2046 @@
+import {
+  ArrowUpRight,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Cuboid,
+  Headphones,
+  Menu,
+  PlaneTakeoff,
+  WandSparkles,
+  X,
+} from "lucide-react";
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import Aurora from "./components/Aurora";
+import FloatingLines from "./components/FloatingLines";
+import SplitText from "./components/SplitText";
+import ViewportVideo from "./components/ViewportVideo";
+
+type Locale = "zh" | "en";
+
+type Localized = {
+  en: string;
+  zh: string;
+};
+
+type WorkItem = {
+  category: Localized;
+  embedSrc?: string;
+  id: string;
+  link: string;
+  mediaSrc: string;
+  mediaType: "embed" | "image" | "video";
+  summary: Localized;
+  title: Localized;
+  year: string;
+};
+
+type UrbanEscapeItem =
+  | {
+      id: string;
+      mediaType: "video";
+      src: string;
+      summary: Localized;
+      title: Localized;
+      year: string;
+    }
+  | {
+      embedSrc: string;
+      id: string;
+      mediaType: "embed";
+      summary: Localized;
+      title: Localized;
+      year: string;
+    };
+
+const content = {
+  en: {
+    aboutBody:
+      "I focus on Blender motion, short-form visual storytelling, and commercial edits. This portfolio is built like a film sequence: atmosphere first, detail after.",
+    aboutTitle: "Crafting moving images with rhythm, contrast, and story.",
+    contactBody:
+      "Open to branded films, motion identity, title sequence, and visual concept collaboration.",
+    contactButton: "Email Me",
+    contactTitle: "Let's build your next visual project.",
+    footer: "All rights reserved.",
+    heroActionPrimary: "View Works",
+    heroActionSecondary: "Contact",
+    heroKicker: "Visual Director / Motion Creator",
+    heroLocation: "Shanghai, China",
+    heroMeta: "[EN] PERSONAL VIDEO PORTFOLIO",
+    heroScroll: "Scroll",
+    heroSubtitle: "Personal Video Portfolio",
+    heroTitle: "YT striver",
+    heroWriter: "",
+    langLabel: "Language",
+    navCta: "Book a Call",
+    processItems: [
+      {
+        body: "Mood, tempo, color script, and visual references are shaped before touching the timeline.",
+        title: "Concept Build",
+      },
+      {
+        body: "3D layout, camera language, lighting rhythm, and key motion beats are designed for impact.",
+        title: "Production",
+      },
+      {
+        body: "Edit, sound sync, grading, and final polish to make every frame feel intentional.",
+        title: "Post & Delivery",
+      },
+    ],
+    processTitle: "From idea sketch to final frame.",
+    sectionAbout: "Story",
+    sectionContact: "Contact",
+    sectionProcess: "Process",
+    sectionWorks: "Works",
+    stats: [
+      { label: "Visual Projects", value: "12+" },
+      { label: "Max Output", value: "4K" },
+      { label: "Main Direction", value: "Blender" },
+      { label: "Updated", value: "2026" },
+    ],
+    transitionQuote: "Light fades.\nThe pulse remains.",
+    worksTitle: "Selected moving-image projects.",
+  },
+  zh: {
+    aboutBody:
+      "我主要做 Blender 动效、短片叙事和商业影像剪辑。这个站点按“电影节奏”来设计：先给氛围，再看细节。",
+    aboutTitle: "用节奏、反差与叙事去塑造每一帧。",
+    contactBody:
+      "可合作方向：品牌短片、动态视觉识别、片头设计、视觉概念开发。",
+    contactButton: "邮件联系",
+    contactTitle: "一起做下一支有记忆点的影像作品。",
+    footer: "保留所有权利。",
+    heroActionPrimary: "查看作品",
+    heroActionSecondary: "联系我",
+    heroKicker: "视觉导演 / 动效创作者",
+    heroLocation: "中国 · 上海",
+    heroMeta: "个人视频作品集",
+    heroScroll: "下滑",
+    heroSubtitle: "个人视频作品集",
+    heroTitle: "小杨同学",
+    heroWriter: "",
+    langLabel: "语言",
+    navCta: "合作咨询",
+    processItems: [
+      {
+        body: "先做情绪、节奏、色彩和视觉参考，明确作品的气质与叙事方向。",
+        title: "概念构建",
+      },
+      {
+        body: "完成 3D 场景、镜头语言、光影节奏与关键动作设计，确保画面冲击力。",
+        title: "制作执行",
+      },
+      {
+        body: "进行剪辑、声音节拍同步、调色与细节抛光，让成片更完整。",
+        title: "后期交付",
+      },
+    ],
+    processTitle: "从灵感草图到最终成片。",
+    sectionAbout: "简介",
+    sectionContact: "联系",
+    sectionProcess: "流程",
+    sectionWorks: "作品",
+    stats: [
+      { label: "作品数量", value: "12+" },
+      { label: "最高输出", value: "4K" },
+      { label: "核心方向", value: "Blender" },
+      { label: "持续更新", value: "2026" },
+    ],
+    transitionQuote: "光线落下，\n节奏仍在。",
+    worksTitle: "Blender小白成长中",
+  },
+} as const;
+
+const works: WorkItem[] = [
+  {
+    category: {
+      en: "Blender Visual",
+      zh: "Blender 视觉实验",
+    },
+    id: "01",
+    link: "#",
+    mediaSrc: "/videos/方块领域.mp4",
+    mediaType: "video",
+    summary: {
+      en: "A kinetic cube world synced with electronic rhythm and accelerated light pulses.",
+      zh: "以电子节拍驱动的方块世界动效，强调速度感与光线冲击。",
+    },
+    title: {
+      en: "Cubic Domain",
+      zh: "方块领域",
+    },
+    year: "2026",
+  },
+  {
+    category: {
+      en: "Urban Escape Plan",
+      zh: "城市逃离计划",
+    },
+    id: "02",
+    link: "#",
+    mediaSrc: "/videos/地铁站.mp4",
+    mediaType: "video",
+    summary: {
+      en: "Urban transit sequence focused on pacing, city motion, and documentary mood.",
+      zh: "地铁站城市节奏段落，突出通勤动线、空间转换与纪录片氛围。",
+    },
+    title: {
+      en: "Metro Station",
+      zh: "地铁站",
+    },
+    year: "2026",
+  },
+  {
+    category: {
+      en: "Urban Escape Plan",
+      zh: "城市逃离计划",
+    },
+    id: "03",
+    link: "#",
+    mediaSrc: "/videos/迷失竹林.mp4",
+    mediaType: "video",
+    summary: {
+      en: "A bamboo-forest drift with ambient pace, travel solitude, and natural textures.",
+      zh: "迷失竹林段落以慢节奏旅行质感为主，强调自然纹理与独处感。",
+    },
+    title: {
+      en: "Lost in Bamboo",
+      zh: "迷失竹林",
+    },
+    year: "2026",
+  },
+  {
+    category: {
+      en: "Urban Escape Plan",
+      zh: "城市逃离计划",
+    },
+    id: "04",
+    link: "#",
+    mediaSrc: "/videos/迷失雪山.mp4",
+    mediaType: "video",
+    summary: {
+      en: "Snow-mountain sequence with sparse rhythm, scale contrast, and long-lens calm.",
+      zh: "迷失雪山段落以稀疏节奏与尺度反差构建高海拔静谧感。",
+    },
+    title: {
+      en: "Lost in Snow Mountain",
+      zh: "迷失雪山",
+    },
+    year: "2026",
+  },
+];
+
+const urbanEscapeVideos: UrbanEscapeItem[] = [
+  {
+    id: "urban-01",
+    mediaType: "video",
+    src: "/videos/鲫鱼背.mp4",
+    summary: {
+      en: "A ridge run at Huangshan Jiyubei with wide views and shifting mountain weather.",
+      zh: "黄山鲫鱼背山脊行进，展现开阔视野与山间天气变化。",
+    },
+    title: {
+      en: "Huangshan Jiyubei Ridge",
+      zh: "黄山鲫鱼背",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-02",
+    mediaType: "video",
+    src: "/videos/止马岭徒步.mp4",
+    summary: {
+      en: "A hiking route in Zhimaling focused on trail rhythm and natural texture.",
+      zh: "止马岭徒步线路，突出步伐节奏与自然地貌肌理。",
+    },
+    title: {
+      en: "Zhimaling Hike",
+      zh: "止马岭徒步",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-03",
+    mediaType: "video",
+    src: "/videos/南京小川藏线.mp4",
+    summary: {
+      en: "Cycle through the rolling route known as Nanjing's mini Sichuan-Tibet line.",
+      zh: "骑行穿越起伏山路，记录南京小川藏线的速度与风景变化。",
+    },
+    title: {
+      en: "Nanjing Mini Sichuan-Tibet Route",
+      zh: "南京小川藏线",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-04",
+    mediaType: "video",
+    src: "/videos/无想寺水库.mp4",
+    summary: {
+      en: "A calm waterside journey around Wuxiang Temple Reservoir.",
+      zh: "在无想寺水库慢行，捕捉水岸空间与静谧氛围。",
+    },
+    title: {
+      en: "Wuxiang Temple Reservoir",
+      zh: "无想寺水库",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-05",
+    mediaType: "video",
+    src: "/videos/兴化之旅.mp4",
+    summary: {
+      en: "A Xinghua field journey featuring water-town texture and seasonal rhythm.",
+      zh: "兴化之行以水乡肌理与季节节奏为核心，呈现平缓而流动的旅程感。",
+    },
+    title: {
+      en: "Xinghua Trip",
+      zh: "兴化之行",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-06",
+    mediaType: "video",
+    src: "/videos/阳朔之行.mp4",
+    summary: {
+      en: "A Yangshuo route focused on river-mountain scale and relaxed travel pacing.",
+      zh: "阳朔之行聚焦山水尺度与慢节奏旅行氛围，强调空间呼吸感。",
+    },
+    title: {
+      en: "Yangshuo Trip",
+      zh: "阳朔之行",
+    },
+    year: "2026",
+  },
+  {
+    id: "urban-07",
+    mediaType: "video",
+    src: "/videos/高淳之行.mp4",
+    summary: {
+      en: "A Gaochun visit capturing lakeside paths, town cadence, and local light.",
+      zh: "高淳之行记录湖岸步道与小城节奏，在自然光线中呈现日常诗意。",
+    },
+    title: {
+      en: "Gaochun Trip",
+      zh: "高淳之行",
+    },
+    year: "2026",
+  },
+];
+
+const bimCaseVideos: UrbanEscapeItem[] = [
+  {
+    id: "bim-01",
+    mediaType: "video",
+    src: "/videos/连云港徐圩新区医疗救援中心BIM+技术应用.mp4",
+    summary: {
+      en: "BIM+ technology deployment for Xuwei New District medical rescue center in Lianyungang.",
+      zh: "连云港徐圩新区医疗救援中心项目的 BIM+ 技术应用实践，聚焦施工协同与数字化交付。",
+    },
+    title: {
+      en: "Lianyungang Xuwei Medical Rescue Center",
+      zh: "连云港徐圩新区医疗救援中心",
+    },
+    year: "2026",
+  },
+  {
+    id: "bim-02",
+    mediaType: "video",
+    src: "/videos/南京潘窑F、G地块施工阶段BIM综合应用与探索.mp4",
+    summary: {
+      en: "Integrated BIM application and site-stage exploration across Nanjing Panyao F/G plots.",
+      zh: "南京潘窑 F、G 地块施工阶段 BIM 综合应用与探索，强调现场落地与多专业协同。",
+    },
+    title: {
+      en: "Nanjing Panyao F/G Plot BIM Integration",
+      zh: "南京潘窑F、G地块施工阶段BIM综合应用",
+    },
+    year: "2026",
+  },
+  {
+    id: "bim-03",
+    mediaType: "video",
+    src: "/videos/BIM+EPC-在大型综合体项目中的应用与探索.mp4",
+    summary: {
+      en: "BIM + EPC workflow in a large mixed-use complex, from model governance to execution.",
+      zh: "BIM+EPC 在大型综合体项目中的应用与探索，覆盖模型统筹、施工管理与执行联动。",
+    },
+    title: {
+      en: "BIM+EPC in Large Complex Project",
+      zh: "BIM+EPC在大型综合体项目中的应用与探索",
+    },
+    year: "2026",
+  },
+  {
+    id: "bim-04",
+    mediaType: "video",
+    src: "/videos/机场三路社区中心智能建造CIM试点项目的应用与探索.mp4",
+    summary: {
+      en: "Application and pilot exploration of smart construction + CIM at Airport 3rd Road Community Center.",
+      zh: "机场三路社区中心智能建造 CIM 试点项目应用与探索，聚焦智能建造与数字孪生实践。",
+    },
+    title: {
+      en: "Airport 3rd Road Community Center CIM Pilot",
+      zh: "机场三路社区中心智能建造CIM试点项目",
+    },
+    year: "2026",
+  },
+];
+
+const worksMotionTokens = [
+  {
+    icon: Cuboid,
+    id: "token-01",
+    label: {
+      en: "Blender Study Plan",
+      zh: "Blender学习计划",
+    },
+  },
+  {
+    icon: PlaneTakeoff,
+    id: "token-02",
+    label: {
+      en: "Urban Escape Plan",
+      zh: "城市逃离计划",
+    },
+  },
+  {
+    icon: Building2,
+    id: "token-03",
+    label: {
+      en: "BIM Case Sharing",
+      zh: "BIM工程案例分享",
+    },
+  },
+  {
+    icon: Headphones,
+    id: "token-04",
+    label: {
+      en: "Favorite Songs",
+      zh: "光影行纪档案",
+    },
+  },
+];
+
+const worksShowcaseChapters = [
+  {
+    en: "Blender Study Plan",
+    zh: "BLENDER学习计划",
+  },
+  {
+    en: "Urban Escape Plan",
+    zh: "城市逃离计划",
+  },
+  {
+    en: "BIM Case Sharing",
+    zh: "BIM工程案例分享",
+  },
+  {
+    en: "Favorite Songs",
+    zh: "光影行纪档案",
+  },
+] as const;
+
+const heroVideo = "/videos/hero-loop-scrub-hq.mp4";
+
+export function App() {
+  const [activeIntroThemeIndex, setActiveIntroThemeIndex] = useState(0);
+  const [activeShowcaseIndex, setActiveShowcaseIndex] = useState(0);
+  const [activeUrbanIndex, setActiveUrbanIndex] = useState(0);
+  const [activeBimIndex, setActiveBimIndex] = useState(0);
+  const [isShowcasePhase, setIsShowcasePhase] = useState(false);
+  const [isUrbanInView, setIsUrbanInView] = useState(false);
+  const [isBimInView, setIsBimInView] = useState(false);
+  const [isLiteFloatingLines, setIsLiteFloatingLines] = useState(false);
+  const [lightboxVideo, setLightboxVideo] = useState<{
+    src: string;
+    title: string;
+  } | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [lang] = useState<Locale>("zh");
+  const activeShowcaseIndexRef = useRef(0);
+  const activeUrbanIndexRef = useRef(0);
+  const activeBimIndexRef = useRef(0);
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const storySectionRef = useRef<HTMLElement>(null);
+  const urbanTrackViewportRef = useRef<HTMLDivElement>(null);
+  const bimSectionRef = useRef<HTMLElement>(null);
+  const bimTrackViewportRef = useRef<HTMLDivElement>(null);
+  const worksStageRef = useRef<HTMLElement>(null);
+  const worksTrackViewportRef = useRef<HTMLDivElement>(null);
+
+  const t = content[lang];
+  const sections = useMemo(
+    () => [
+      { href: "#story", label: t.sectionAbout },
+      { href: "#works", label: t.sectionWorks },
+      { href: "#process", label: t.sectionProcess },
+      { href: "#contact", label: t.sectionContact },
+    ],
+    [t.sectionAbout, t.sectionContact, t.sectionProcess, t.sectionWorks]
+  );
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
+    const syncLiteMode = () => setIsLiteFloatingLines(media.matches);
+
+    syncLiteMode();
+
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", syncLiteMode);
+      return () => media.removeEventListener("change", syncLiteMode);
+    }
+
+    media.addListener(syncLiteMode);
+    return () => media.removeListener(syncLiteMode);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    const elements = document.querySelectorAll(".reveal, .reveal-left, .stagger-up");
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen || lightboxVideo ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen, lightboxVideo]);
+
+  useEffect(() => {
+    if (!lightboxVideo) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setLightboxVideo(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [lightboxVideo]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.title =
+      lang === "zh" ? "小杨同学 | 个人作品集" : "YT striver | Video Portfolio";
+  }, [lang]);
+
+  useEffect(() => {
+    activeShowcaseIndexRef.current = activeShowcaseIndex;
+  }, [activeShowcaseIndex]);
+
+  useEffect(() => {
+    activeUrbanIndexRef.current = activeUrbanIndex;
+  }, [activeUrbanIndex]);
+
+  useEffect(() => {
+    activeBimIndexRef.current = activeBimIndex;
+  }, [activeBimIndex]);
+
+  useEffect(() => {
+    const section = worksStageRef.current;
+    if (!section) {
+      return;
+    }
+
+    const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
+
+    const syncProgress = () => {
+      const rect = section.getBoundingClientRect();
+      const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const progress = clamp01(-rect.top / scrollableRange);
+      const showcaseProgress = clamp01((progress - 0.22) / 0.78);
+      const showcasePhase = progress > 0.22;
+      section.style.setProperty("--works-stage-progress", progress.toFixed(4));
+      section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
+      section.dataset.phase = showcasePhase ? "showcase" : "intro";
+      setIsShowcasePhase((prev) => (prev === showcasePhase ? prev : showcasePhase));
+    };
+
+    syncProgress();
+    window.addEventListener("scroll", syncProgress, { passive: true });
+    window.addEventListener("resize", syncProgress);
+    window.addEventListener("load", syncProgress);
+
+    return () => {
+      window.removeEventListener("scroll", syncProgress);
+      window.removeEventListener("resize", syncProgress);
+      window.removeEventListener("load", syncProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = worksStageRef.current;
+    const viewport = worksTrackViewportRef.current;
+    if (!section || !viewport) return;
+
+    let wheelBuffer = 0;
+    let pointerActive = false;
+    let horizontalDrag = false;
+    let startX = 0;
+    let startY = 0;
+    let carryX = 0;
+    let stepLock = false;
+    let unlockTimer: number | null = null;
+    const lockDurationMs = viewport.clientWidth >= 960 ? 460 : 540;
+    const maxIndex = Math.max(works.length - 1, 0);
+
+    const stepWorksIndex = (direction: number) => {
+      if (direction === 0) return;
+      const clampedIndex = Math.min(
+        Math.max(activeShowcaseIndexRef.current + direction, 0),
+        maxIndex
+      );
+      activeShowcaseIndexRef.current = clampedIndex;
+      setActiveShowcaseIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+    };
+
+    const canStepWorks = (direction: number) => {
+      if (direction > 0) return activeShowcaseIndexRef.current < maxIndex;
+      if (direction < 0) return activeShowcaseIndexRef.current > 0;
+      return false;
+    };
+
+    const queueStepWorks = (direction: number) => {
+      if (stepLock) return;
+      if (!canStepWorks(direction)) {
+        wheelBuffer = 0;
+        carryX = 0;
+        return;
+      }
+
+      stepLock = true;
+      stepWorksIndex(direction);
+      wheelBuffer = 0;
+      carryX = 0;
+
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      unlockTimer = window.setTimeout(() => {
+        stepLock = false;
+        unlockTimer = null;
+      }, lockDurationMs);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+      if (!horizontalIntent) return;
+      if (!event.cancelable) return;
+
+      event.preventDefault();
+      if (stepLock) return;
+
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      wheelBuffer += delta;
+
+      if (Math.abs(wheelBuffer) >= 52) {
+        queueStepWorks(wheelBuffer > 0 ? 1 : -1);
+      }
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      pointerActive = true;
+      horizontalDrag = false;
+      startX = event.clientX;
+      startY = event.clientY;
+      carryX = 0;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!pointerActive) return;
+
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+
+      if (!horizontalDrag) {
+        if (Math.abs(deltaX) < 10) return;
+        if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        horizontalDrag = true;
+      }
+
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+
+      if (stepLock) return;
+
+      carryX += deltaX;
+      startX = event.clientX;
+      startY = event.clientY;
+
+      if (Math.abs(carryX) >= 72) {
+        queueStepWorks(carryX < 0 ? 1 : -1);
+        pointerActive = false;
+        horizontalDrag = false;
+      }
+    };
+
+    const endPointer = () => {
+      pointerActive = false;
+      horizontalDrag = false;
+      carryX = 0;
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (section.dataset.phase !== "showcase") return;
+
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable) return;
+      const tagName = target?.tagName;
+      if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") return;
+
+      const rect = section.getBoundingClientRect();
+      const inViewport = rect.top < window.innerHeight * 0.72 && rect.bottom > window.innerHeight * 0.28;
+      if (!inViewport) return;
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        queueStepWorks(1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        queueStepWorks(-1);
+      }
+    };
+
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    viewport.addEventListener("pointerdown", onPointerDown, { passive: true });
+    viewport.addEventListener("pointermove", onPointerMove, { passive: false });
+    window.addEventListener("pointerup", endPointer, { passive: true });
+    window.addEventListener("pointercancel", endPointer, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      viewport.removeEventListener("wheel", onWheel);
+      viewport.removeEventListener("pointerdown", onPointerDown);
+      viewport.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", endPointer);
+      window.removeEventListener("pointercancel", endPointer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = storySectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        setIsUrbanInView((prev) => (prev === entry.isIntersecting ? prev : entry.isIntersecting));
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = bimSectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        setIsBimInView((prev) => (prev === entry.isIntersecting ? prev : entry.isIntersecting));
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(section);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = storySectionRef.current;
+    const viewport = urbanTrackViewportRef.current;
+    if (!section || !viewport) return;
+
+    let wheelBuffer = 0;
+    let pointerActive = false;
+    let horizontalDrag = false;
+    let startX = 0;
+    let startY = 0;
+    let carryX = 0;
+    let stepLock = false;
+    let unlockTimer: number | null = null;
+    const lockDurationMs = viewport.clientWidth >= 960 ? 460 : 540;
+    const maxIndex = Math.max(urbanEscapeVideos.length - 1, 0);
+
+    const stepUrbanIndex = (direction: number) => {
+      if (direction === 0) return;
+      const clampedIndex = Math.min(Math.max(activeUrbanIndexRef.current + direction, 0), maxIndex);
+      activeUrbanIndexRef.current = clampedIndex;
+      setActiveUrbanIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+    };
+
+    const canStepUrban = (direction: number) => {
+      if (direction > 0) return activeUrbanIndexRef.current < maxIndex;
+      if (direction < 0) return activeUrbanIndexRef.current > 0;
+      return false;
+    };
+
+    const queueStepUrban = (direction: number) => {
+      if (stepLock) return;
+      if (!canStepUrban(direction)) {
+        wheelBuffer = 0;
+        carryX = 0;
+        return;
+      }
+
+      stepLock = true;
+      stepUrbanIndex(direction);
+      wheelBuffer = 0;
+      carryX = 0;
+
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      unlockTimer = window.setTimeout(() => {
+        stepLock = false;
+        unlockTimer = null;
+      }, lockDurationMs);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+      if (!horizontalIntent) return;
+      if (!event.cancelable) return;
+
+      event.preventDefault();
+      if (stepLock) return;
+
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      wheelBuffer += delta;
+
+      if (Math.abs(wheelBuffer) >= 52) {
+        queueStepUrban(wheelBuffer > 0 ? 1 : -1);
+      }
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      pointerActive = true;
+      horizontalDrag = false;
+      startX = event.clientX;
+      startY = event.clientY;
+      carryX = 0;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!pointerActive) return;
+
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+
+      if (!horizontalDrag) {
+        if (Math.abs(deltaX) < 10) return;
+        if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        horizontalDrag = true;
+      }
+
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+
+      if (stepLock) return;
+
+      carryX += deltaX;
+      startX = event.clientX;
+      startY = event.clientY;
+
+      if (Math.abs(carryX) >= 72) {
+        queueStepUrban(carryX < 0 ? 1 : -1);
+        pointerActive = false;
+        horizontalDrag = false;
+      }
+    };
+
+    const endPointer = () => {
+      pointerActive = false;
+      horizontalDrag = false;
+      carryX = 0;
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable) return;
+      const tagName = target?.tagName;
+      if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") return;
+
+      const rect = section.getBoundingClientRect();
+      const inViewport = rect.top < window.innerHeight * 0.72 && rect.bottom > window.innerHeight * 0.28;
+      if (!inViewport) return;
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        queueStepUrban(1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        queueStepUrban(-1);
+      }
+    };
+
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    viewport.addEventListener("pointerdown", onPointerDown, { passive: true });
+    viewport.addEventListener("pointermove", onPointerMove, { passive: false });
+    window.addEventListener("pointerup", endPointer, { passive: true });
+    window.addEventListener("pointercancel", endPointer, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      viewport.removeEventListener("wheel", onWheel);
+      viewport.removeEventListener("pointerdown", onPointerDown);
+      viewport.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", endPointer);
+      window.removeEventListener("pointercancel", endPointer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = bimSectionRef.current;
+    const viewport = bimTrackViewportRef.current;
+    if (!section || !viewport) return;
+
+    let wheelBuffer = 0;
+    let pointerActive = false;
+    let horizontalDrag = false;
+    let startX = 0;
+    let startY = 0;
+    let carryX = 0;
+    let stepLock = false;
+    let unlockTimer: number | null = null;
+    const lockDurationMs = viewport.clientWidth >= 960 ? 460 : 540;
+    const maxIndex = Math.max(bimCaseVideos.length - 1, 0);
+
+    const stepBimIndex = (direction: number) => {
+      if (direction === 0) return;
+      const clampedIndex = Math.min(Math.max(activeBimIndexRef.current + direction, 0), maxIndex);
+      activeBimIndexRef.current = clampedIndex;
+      setActiveBimIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+    };
+
+    const canStepBim = (direction: number) => {
+      if (direction > 0) return activeBimIndexRef.current < maxIndex;
+      if (direction < 0) return activeBimIndexRef.current > 0;
+      return false;
+    };
+
+    const queueStepBim = (direction: number) => {
+      if (stepLock) return;
+      if (!canStepBim(direction)) {
+        wheelBuffer = 0;
+        carryX = 0;
+        return;
+      }
+
+      stepLock = true;
+      stepBimIndex(direction);
+      wheelBuffer = 0;
+      carryX = 0;
+
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      unlockTimer = window.setTimeout(() => {
+        stepLock = false;
+        unlockTimer = null;
+      }, lockDurationMs);
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+      if (!horizontalIntent) return;
+      if (!event.cancelable) return;
+
+      event.preventDefault();
+      if (stepLock) return;
+
+      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      wheelBuffer += delta;
+
+      if (Math.abs(wheelBuffer) >= 52) {
+        queueStepBim(wheelBuffer > 0 ? 1 : -1);
+      }
+    };
+
+    const onPointerDown = (event: PointerEvent) => {
+      pointerActive = true;
+      horizontalDrag = false;
+      startX = event.clientX;
+      startY = event.clientY;
+      carryX = 0;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!pointerActive) return;
+
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+
+      if (!horizontalDrag) {
+        if (Math.abs(deltaX) < 10) return;
+        if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        horizontalDrag = true;
+      }
+
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+
+      if (stepLock) return;
+
+      carryX += deltaX;
+      startX = event.clientX;
+      startY = event.clientY;
+
+      if (Math.abs(carryX) >= 72) {
+        queueStepBim(carryX < 0 ? 1 : -1);
+        pointerActive = false;
+        horizontalDrag = false;
+      }
+    };
+
+    const endPointer = () => {
+      pointerActive = false;
+      horizontalDrag = false;
+      carryX = 0;
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.isContentEditable) return;
+      const tagName = target?.tagName;
+      if (tagName === "INPUT" || tagName === "TEXTAREA" || tagName === "SELECT") return;
+
+      const rect = section.getBoundingClientRect();
+      const inViewport = rect.top < window.innerHeight * 0.72 && rect.bottom > window.innerHeight * 0.28;
+      if (!inViewport) return;
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        queueStepBim(1);
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        queueStepBim(-1);
+      }
+    };
+
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    viewport.addEventListener("pointerdown", onPointerDown, { passive: true });
+    viewport.addEventListener("pointermove", onPointerMove, { passive: false });
+    window.addEventListener("pointerup", endPointer, { passive: true });
+    window.addEventListener("pointercancel", endPointer, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      if (unlockTimer !== null) window.clearTimeout(unlockTimer);
+      viewport.removeEventListener("wheel", onWheel);
+      viewport.removeEventListener("pointerdown", onPointerDown);
+      viewport.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", endPointer);
+      window.removeEventListener("pointercancel", endPointer);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    const section = heroSectionRef.current;
+    if (!video || !section) {
+      return;
+    }
+
+    let destroyed = false;
+    let rafId = 0;
+    let isFrameScheduled = false;
+    let targetTime = 0;
+    let renderedTime = 0;
+    let duration = 0;
+    let lastCommitted = -1;
+    const tailGuard = 0.03;
+    const seekThreshold = 1 / 240;
+    const scrubCurve = 1.15;
+    const scrubViewportFactor = 0.8;
+    const scrubSpan = 0.9;
+    const worksStart = 0;
+    const worksEnd = 1;
+
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+
+    const clamp01 = (value: number) => clamp(value, 0, 1);
+
+    const getSectionProgress = () => {
+      const rect = section.getBoundingClientRect();
+      const stickyRange = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const virtualRange = Math.max(stickyRange, window.innerHeight * scrubViewportFactor);
+      const linearProgress = clamp01(-rect.top / virtualRange);
+      return linearProgress ** scrubCurve;
+    };
+
+    const getWorksProgress = (sectionProgress: number) =>
+      clamp01((sectionProgress - worksStart) / (worksEnd - worksStart));
+
+    const getTargetTime = (sectionProgress: number) => {
+      const scrubbedDuration = duration * scrubSpan;
+      return clamp(sectionProgress * scrubbedDuration, 0, duration);
+    };
+
+    const syncWorksState = (sectionProgress: number) => {
+      section.style.setProperty("--scrub-progress", sectionProgress.toFixed(4));
+      section.style.setProperty("--works-progress", getWorksProgress(sectionProgress).toFixed(4));
+    };
+
+    const commitTime = (nextTime: number) => {
+      const clamped = clamp(nextTime, 0, duration);
+      if (Math.abs(clamped - lastCommitted) < seekThreshold) {
+        return;
+      }
+
+      try {
+        if (typeof video.fastSeek === "function") {
+          const delta = Math.abs(video.currentTime - clamped);
+          if (delta > 0.12) {
+            video.fastSeek(clamped);
+          } else {
+            video.currentTime = clamped;
+          }
+        } else {
+          video.currentTime = clamped;
+        }
+        lastCommitted = clamped;
+      } catch {
+        // Ignore occasional seek errors during rapid scroll bursts.
+      }
+    };
+
+    const syncDuration = () => {
+      const rawDuration = Number.isFinite(video.duration) ? video.duration : 0;
+      duration = Math.max(rawDuration - tailGuard, 0);
+      const sectionProgress = getSectionProgress();
+      targetTime = getTargetTime(sectionProgress);
+      renderedTime = targetTime;
+      syncWorksState(sectionProgress);
+      commitTime(renderedTime);
+    };
+
+    const onLoadedMetadata = () => {
+      syncDuration();
+      video.pause();
+    };
+
+    video.pause();
+    if (video.readyState >= 1) {
+      onLoadedMetadata();
+    } else {
+      video.addEventListener("loadedmetadata", onLoadedMetadata);
+    }
+
+    const scheduleFrame = () => {
+      if (destroyed || isFrameScheduled) {
+        return;
+      }
+      isFrameScheduled = true;
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const tick = () => {
+      isFrameScheduled = false;
+      if (destroyed) {
+        return;
+      }
+
+      const sectionProgress = getSectionProgress();
+      syncWorksState(sectionProgress);
+      let shouldContinue = false;
+
+      if (duration > 0) {
+        targetTime = getTargetTime(sectionProgress);
+        const diff = targetTime - renderedTime;
+        const absDiff = Math.abs(diff);
+        const damping = absDiff > 0.25 ? 0.52 : absDiff > 0.08 ? 0.4 : 0.28;
+        renderedTime += diff * damping;
+
+        if (absDiff < 0.0012) {
+          renderedTime = targetTime;
+        }
+
+        commitTime(renderedTime);
+        shouldContinue = Math.abs(targetTime - renderedTime) > 0.0018;
+      }
+
+      if (shouldContinue) {
+        scheduleFrame();
+      }
+    };
+
+    const onResize = () => {
+      const sectionProgress = getSectionProgress();
+      syncWorksState(sectionProgress);
+      if (duration <= 0) return;
+      targetTime = getTargetTime(sectionProgress);
+      renderedTime = targetTime;
+      commitTime(renderedTime);
+    };
+
+    const onScroll = () => {
+      scheduleFrame();
+    };
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        scheduleFrame();
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    scheduleFrame();
+
+    return () => {
+      destroyed = true;
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      video.removeEventListener("loadedmetadata", onLoadedMetadata);
+    };
+  }, []);
+
+  const openVideoLightbox = (work: WorkItem) => {
+    if (work.mediaType !== "video") return;
+    setLightboxVideo({
+      src: work.mediaSrc,
+      title: work.title[lang],
+    });
+  };
+
+  const stackedRevealStep = 2.2;
+
+  const showcaseCount = works.length;
+  const urbanCount = urbanEscapeVideos.length;
+  const bimCount = bimCaseVideos.length;
+  const isAtFirstShowcase = activeShowcaseIndex <= 0;
+  const isAtLastShowcase = activeShowcaseIndex >= showcaseCount - 1;
+  const isAtFirstUrban = activeUrbanIndex <= 0;
+  const isAtLastUrban = activeUrbanIndex >= urbanCount - 1;
+  const isAtFirstBim = activeBimIndex <= 0;
+  const isAtLastBim = activeBimIndex >= bimCount - 1;
+
+  const jumpToShowcaseIndex = (nextIndex: number) => {
+    const clampedIndex = Math.min(Math.max(nextIndex, 0), showcaseCount - 1);
+    activeShowcaseIndexRef.current = clampedIndex;
+    setActiveShowcaseIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+  };
+
+  const shiftShowcaseIndex = (direction: number) => {
+    if (direction === 0) return;
+    jumpToShowcaseIndex(activeShowcaseIndexRef.current + direction);
+  };
+
+  const jumpToUrbanIndex = (nextIndex: number) => {
+    const clampedIndex = Math.min(Math.max(nextIndex, 0), urbanCount - 1);
+    activeUrbanIndexRef.current = clampedIndex;
+    setActiveUrbanIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+  };
+
+  const shiftUrbanIndex = (direction: number) => {
+    if (direction === 0) return;
+    jumpToUrbanIndex(activeUrbanIndexRef.current + direction);
+  };
+
+  const jumpToBimIndex = (nextIndex: number) => {
+    const clampedIndex = Math.min(Math.max(nextIndex, 0), bimCount - 1);
+    activeBimIndexRef.current = clampedIndex;
+    setActiveBimIndex((prev) => (prev === clampedIndex ? prev : clampedIndex));
+  };
+
+  const shiftBimIndex = (direction: number) => {
+    if (direction === 0) return;
+    jumpToBimIndex(activeBimIndexRef.current + direction);
+  };
+
+  const scrollToSection = (section: HTMLElement, offset = 96) => {
+    const top = section.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({
+      top: Math.max(top, 0),
+      behavior: "smooth",
+    });
+  };
+
+  const scrollToWorksTheme = (chapterIndex: number) => {
+    const section = worksStageRef.current;
+    if (!section) return;
+
+    const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+    const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
+    const showcaseProgress = chapterIndex === 3 ? 0.42 : 0.34;
+
+    window.scrollTo({
+      top: sectionTop + scrollableRange * showcaseProgress,
+      behavior: "smooth",
+    });
+
+    if (chapterIndex === 0) {
+      jumpToShowcaseIndex(0);
+    } else if (chapterIndex === 3) {
+      jumpToShowcaseIndex(Math.min(works.length - 1, 3));
+    }
+  };
+
+  const handleThemeTokenClick = (chapterIndex: number) => {
+    setActiveIntroThemeIndex(chapterIndex);
+
+    if (chapterIndex === 1 && storySectionRef.current) {
+      scrollToSection(storySectionRef.current);
+      return;
+    }
+
+    if (chapterIndex === 2 && bimSectionRef.current) {
+      scrollToSection(bimSectionRef.current);
+      return;
+    }
+
+    scrollToWorksTheme(chapterIndex);
+  };
+
+  const getStackedCardStyle = (
+    index: number,
+    activeIndex: number,
+    itemCount: number
+  ): CSSProperties => {
+    const offset = index - activeIndex;
+
+    if (offset < 0) {
+      return {
+        filter: "blur(0.8px) saturate(0.86)",
+        opacity: 0,
+        pointerEvents: "none",
+        transform: "translate3d(-14%, 0, 0)",
+        zIndex: 0,
+      };
+    }
+
+    if (offset > 1) {
+      return {
+        filter: "blur(0.8px) saturate(0.86)",
+        opacity: 0,
+        pointerEvents: "none",
+        transform: `translate3d(${stackedRevealStep}%, 0, 0)`,
+        zIndex: 0,
+      };
+    }
+
+    const depth = offset;
+    const translateX = depth * stackedRevealStep;
+    const opacity = depth === 0 ? 1 : 0.94;
+    const saturation = depth === 0 ? 1 : 0.9;
+
+    return {
+      filter: `blur(${depth * 0.2}px) saturate(${saturation})`,
+      opacity,
+      pointerEvents: offset === 0 ? "auto" : "none",
+      transform: `translate3d(${translateX}%, 0, 0)`,
+      zIndex: itemCount - depth,
+    };
+  };
+
+  const getShowcaseCardStyle = (index: number) =>
+    getStackedCardStyle(index, activeShowcaseIndex, showcaseCount);
+
+  const getUrbanCardStyle = (index: number) =>
+    getStackedCardStyle(index, activeUrbanIndex, urbanCount);
+
+  const getBimCardStyle = (index: number) =>
+    getStackedCardStyle(index, activeBimIndex, bimCount);
+
+  return (
+    <main className={`portfolio-page locale-${lang}`}>
+      <div className="portfolio-floating-lines-layer" aria-hidden="true">
+        <FloatingLines
+          linesGradient={["#E945F5", "#2F4BC0", "#E945F5"]}
+          animationSpeed={isLiteFloatingLines ? 0.55 : 0.9}
+          interactive={!isLiteFloatingLines}
+          bendRadius={5}
+          bendStrength={-0.5}
+          mouseDamping={0.05}
+          parallax={!isLiteFloatingLines}
+          parallaxStrength={isLiteFloatingLines ? 0 : 0.2}
+          lineCount={isLiteFloatingLines ? [3, 4, 3] : [5, 6, 5]}
+          mixBlendMode="normal"
+        />
+      </div>
+      <div className="portfolio-content-layer">
+      <nav className={`nav ${isScrolled ? "scrolled" : ""}`}>
+        <div className="nav-inner">
+          <div className="nav-links">
+            {sections.map((item) => (
+              <a key={item.href} href={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </div>
+          <div className="nav-right">
+            <a className="nav-cta" href="#contact">
+              {t.navCta}
+            </a>
+            <button
+              aria-label="toggle menu"
+              className={`nav-hamburger ${isMenuOpen ? "active" : ""}`}
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              type="button"
+            >
+              {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div className={`mobile-overlay ${isMenuOpen ? "active" : ""}`}>
+        {sections.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className="mobile-link"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <section className="hero hero-scrub" id="hero" ref={heroSectionRef}>
+        <div className="hero-pin">
+          <video
+            className="hero-bg"
+            ref={heroVideoRef}
+            muted
+            playsInline
+            preload="auto"
+            poster="/images/hero_bg.jpeg"
+          >
+            <source src={heroVideo} type="video/mp4" />
+          </video>
+          <div className="hero-overlay" />
+          <div className="hero-content">
+            <div className={`hero-title-container ${lang === "zh" ? "has-avatar" : ""}`}>
+              {lang === "zh" ? (
+                <div className="hero-title-zh-split" aria-label={t.heroTitle}>
+                  <span className="hero-title-avatar-shell" aria-hidden="true">
+                    <img className="hero-title-avatar" src="/images/IMG_5449.jpg" alt="" />
+                  </span>
+                </div>
+              ) : (
+                <h1 className="hero-title hero-title-en">{t.heroTitle}</h1>
+              )}
+            </div>
+            <p className={`hero-writer ${t.heroWriter ? "" : "hero-writer-placeholder"}`}>
+              {t.heroWriter || "\u00A0"}
+            </p>
+            <p className="hero-meta">{t.heroMeta}</p>
+            <p className="hero-by">{lang === "zh" ? "creator by：小楊同學" : "written by: YT striver"}</p>
+            <div className="hero-line" />
+            <div className="hero-actions subtle">
+              <a href="#works" className="hero-cta ghost">
+                {t.heroActionPrimary}
+              </a>
+              <a href="#contact" className="hero-cta ghost">
+                {t.heroActionSecondary}
+              </a>
+            </div>
+          </div>
+
+          <div className="scroll-indicator">
+            <span>{t.heroScroll}</span>
+            <div className="scroll-line" />
+          </div>
+        </div>
+      </section>
+
+      <section className="hero-works-stage" id="works" ref={worksStageRef} aria-label="works stage">
+        <div className="hero-works-pin">
+          <div className="works-aurora-bg" aria-hidden="true">
+            <div className="works-aurora-frame">
+              <Aurora
+                colorStops={["#5227FF", "#7cff67", "#5227FF", "#ffffff"]}
+                amplitude={0.82}
+                blend={0.42}
+              />
+            </div>
+          </div>
+
+          <div className="works-intro-layer">
+            <p className="works-intro-kicker">Classification</p>
+            <SplitText
+              tag="h2"
+              text={lang === "zh" ? "动态视觉场域" : "Motion Orbit"}
+              className="works-intro-title"
+              delay={56}
+              duration={0.9}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 34, filter: "blur(7px)" }}
+              to={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              threshold={0.3}
+              rootMargin="-40px"
+              textAlign="center"
+            />
+            <div className="works-intro-orbits">
+              {worksMotionTokens.map((token, index) => {
+                const Icon = token.icon;
+                return (
+                  <button
+                    key={token.id}
+                    className="works-orbit-token"
+                    data-active={index === activeIntroThemeIndex ? "true" : "false"}
+                    type="button"
+                    onClick={() => handleThemeTokenClick(index)}
+                  >
+                    <span className="works-orbit-icon">
+                      <Icon size={18} />
+                    </span>
+                    <span>{token.label[lang]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="works-showcase-layer">
+            <div className="works-showcase-head">
+              <h2>{lang === "zh" ? "BLENDER学习计划" : "Blender Study Plan"}</h2>
+              <p>{t.worksTitle}</p>
+              <ul className="works-showcase-categories">
+                {worksShowcaseChapters.map((chapter, index) => (
+                  <li
+                    key={`${chapter.en}-${index}`}
+                    data-active={index === activeIntroThemeIndex ? "true" : "false"}
+                  >
+                    <span>{chapter[lang]}</span>
+                    <em>{String(index + 1).padStart(2, "0")}</em>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="works-showcase-track works-showcase-flip-track" ref={worksTrackViewportRef}>
+              <ul className="works-showcase-list works-showcase-stack">
+                {works.map((work, index) => (
+                  <li
+                    key={work.id}
+                    className="works-showcase-card works-showcase-flip-card"
+                    data-active={index === activeShowcaseIndex ? "true" : "false"}
+                    style={getShowcaseCardStyle(index)}
+                    aria-hidden={index !== activeShowcaseIndex}
+                  >
+                    <figure
+                      className={
+                        work.mediaType === "embed"
+                          ? "works-showcase-media is-embed"
+                          : "works-showcase-media"
+                      }
+                    >
+                      {work.mediaType === "video" ? (
+                        <button
+                          className="video-preview-trigger"
+                          onClick={() => openVideoLightbox(work)}
+                          type="button"
+                          aria-label={
+                            lang === "zh"
+                              ? `打开《${work.title.zh}》并播放原声`
+                              : `Open ${work.title.en} with sound`
+                          }
+                        >
+                          <ViewportVideo
+                            src={work.mediaSrc}
+                            shouldPlay={
+                              !lightboxVideo && isShowcasePhase && activeShowcaseIndex === index
+                            }
+                            resetOnPause
+                          />
+                          <span className="video-preview-hint">
+                            {lang === "zh" ? "点击放大并播放原声" : "Click to expand with sound"}
+                          </span>
+                        </button>
+                      ) : work.mediaType === "embed" ? (
+                        <iframe
+                          src={work.embedSrc}
+                          title={work.title[lang]}
+                          loading="lazy"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <img src={work.mediaSrc} alt={work.title[lang]} loading="lazy" />
+                      )}
+                    </figure>
+                    <div className="works-showcase-info">
+                      <div className="works-showcase-meta">
+                        <span>[{work.category[lang]}]</span>
+                        <time>{work.year}</time>
+                      </div>
+                      <h3>{work.title[lang]}</h3>
+                      <p>{work.summary[lang]}</p>
+                      {work.mediaType === "embed" ? (
+                        <p className="works-player-tip">
+                          {lang === "zh"
+                            ? "可在播放器设置中选择最高可用清晰度（受账号与片源限制）。"
+                            : "Choose the highest available quality in player settings (depends on account and source)."}
+                        </p>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <button
+                className="works-showcase-nav works-showcase-nav-side is-prev"
+                type="button"
+                onClick={() => shiftShowcaseIndex(-1)}
+                disabled={isAtFirstShowcase}
+                aria-label={lang === "zh" ? "上一条作品" : "Previous work"}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                className="works-showcase-nav works-showcase-nav-side is-next"
+                type="button"
+                onClick={() => shiftShowcaseIndex(1)}
+                disabled={isAtLastShowcase}
+                aria-label={lang === "zh" ? "下一条作品" : "Next work"}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+            <div
+              className="works-showcase-controls"
+              role="group"
+              aria-label={lang === "zh" ? "作品翻页控制" : "Showcase paging controls"}
+            >
+              <div
+                className="works-showcase-dots"
+                aria-label={lang === "zh" ? "作品分页" : "Showcase pagination"}
+              >
+                {works.map((work, index) => (
+                  <button
+                    key={`dot-${work.id}`}
+                    className="works-showcase-dot"
+                    data-active={index === activeShowcaseIndex ? "true" : "false"}
+                    type="button"
+                    onClick={() => jumpToShowcaseIndex(index)}
+                    aria-label={
+                      lang === "zh"
+                        ? `切换到第 ${index + 1} 条作品`
+                        : `Switch to work ${index + 1}`
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+            <p className="works-showcase-gesture-tip">
+              {lang === "zh"
+                ? "使用左右箭头、按钮或横向拖拽翻页。"
+                : "Flip with arrow keys, buttons, or horizontal drag."}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="story-section reveal-left" id="story" ref={storySectionRef}>
+        <div className="container story-showcase-container">
+          <div className="works-showcase-head story-showcase-head">
+            <h2>{lang === "zh" ? "城市逃离计划" : "Urban Escape Plan"}</h2>
+            <p>
+              {lang === "zh"
+                ? "无想·拾野——寻找生活的意义"
+                : "Wuxiang · Wild Fragments — Finding the Meaning of Life"}
+            </p>
+            <ul className="works-showcase-categories story-showcase-categories">
+              {worksShowcaseChapters.map((chapter, index) => (
+                <li
+                  key={`story-${chapter.en}-${index}`}
+                  data-active={index === 1 ? "true" : "false"}
+                >
+                  <span>{chapter[lang]}</span>
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div
+            className="works-showcase-track works-showcase-flip-track story-showcase-track"
+            ref={urbanTrackViewportRef}
+          >
+            <ul className="works-showcase-list works-showcase-stack story-showcase-list">
+              {urbanEscapeVideos.map((video, index) => (
+                <li
+                  key={video.id}
+                  className="works-showcase-card works-showcase-flip-card"
+                  data-active={index === activeUrbanIndex ? "true" : "false"}
+                  style={getUrbanCardStyle(index)}
+                  aria-hidden={index !== activeUrbanIndex}
+                >
+                  <figure
+                    className={
+                      video.mediaType === "embed"
+                        ? "works-showcase-media is-embed"
+                        : "works-showcase-media"
+                    }
+                  >
+                    {video.mediaType === "embed" ? (
+                      <iframe
+                        src={video.embedSrc}
+                        title={video.title[lang]}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <button
+                        className="video-preview-trigger"
+                        onClick={() =>
+                          setLightboxVideo({
+                            src: video.src,
+                            title: video.title[lang],
+                          })
+                        }
+                        type="button"
+                        aria-label={
+                          lang === "zh"
+                            ? `打开《${video.title.zh}》并播放原声`
+                            : `Open ${video.title.en} with sound`
+                        }
+                      >
+                        <ViewportVideo
+                          src={video.src}
+                          shouldPlay={!lightboxVideo && isUrbanInView && activeUrbanIndex === index}
+                          resetOnPause
+                        />
+                        <span className="video-preview-hint">
+                          {lang === "zh" ? "点击放大并播放原声" : "Click to expand with sound"}
+                        </span>
+                      </button>
+                    )}
+                  </figure>
+                  <div className="works-showcase-info">
+                    <div className="works-showcase-meta">
+                      <span>[{lang === "zh" ? "城市逃离计划" : "Urban Escape Plan"}]</span>
+                      <time>{video.year}</time>
+                    </div>
+                    <h3>{video.title[lang]}</h3>
+                    <p>{video.summary[lang]}</p>
+                    {video.mediaType === "embed" ? (
+                      <p className="works-player-tip">
+                        {lang === "zh"
+                          ? "B 站移动端 iframe 方案：界面更简洁，但清晰度与功能受 B 站策略限制。"
+                          : "Bilibili mobile iframe mode: cleaner UI, but quality/features depend on Bilibili policies."}
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-prev"
+              type="button"
+              onClick={() => shiftUrbanIndex(-1)}
+              disabled={isAtFirstUrban}
+              aria-label={lang === "zh" ? "上一条城市作品" : "Previous urban work"}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-next"
+              type="button"
+              onClick={() => shiftUrbanIndex(1)}
+              disabled={isAtLastUrban}
+              aria-label={lang === "zh" ? "下一条城市作品" : "Next urban work"}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+          <div
+            className="works-showcase-controls"
+            role="group"
+            aria-label={lang === "zh" ? "城市逃离计划翻页控制" : "Urban showcase paging controls"}
+          >
+            <div
+              className="works-showcase-dots"
+              aria-label={lang === "zh" ? "城市作品分页" : "Urban showcase pagination"}
+            >
+              {urbanEscapeVideos.map((video, index) => (
+                <button
+                  key={`urban-dot-${video.id}`}
+                  className="works-showcase-dot"
+                  data-active={index === activeUrbanIndex ? "true" : "false"}
+                  type="button"
+                  onClick={() => jumpToUrbanIndex(index)}
+                  aria-label={
+                    lang === "zh"
+                      ? `切换到第 ${index + 1} 条城市作品`
+                      : `Switch to urban work ${index + 1}`
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          <p className="works-showcase-gesture-tip">
+            {lang === "zh"
+              ? "使用左右箭头、按钮或横向拖拽翻页。"
+              : "Flip with arrow keys, buttons, or horizontal drag."}
+          </p>
+        </div>
+      </section>
+
+      <section className="story-section reveal-left" id="bim" ref={bimSectionRef}>
+        <div className="container story-showcase-container">
+          <div className="works-showcase-head story-showcase-head">
+            <h2>{lang === "zh" ? "BIM工程案例分享" : "BIM Case Sharing"}</h2>
+            <p>
+              {lang === "zh"
+                ? "工程数字化应用与探索"
+                : "Applied digital engineering workflows and project exploration"}
+            </p>
+            <ul className="works-showcase-categories story-showcase-categories">
+              {worksShowcaseChapters.map((chapter, index) => (
+                <li
+                  key={`bim-${chapter.en}-${index}`}
+                  data-active={index === 2 ? "true" : "false"}
+                >
+                  <span>{chapter[lang]}</span>
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div
+            className="works-showcase-track works-showcase-flip-track story-showcase-track"
+            ref={bimTrackViewportRef}
+          >
+            <ul className="works-showcase-list works-showcase-stack story-showcase-list">
+              {bimCaseVideos.map((video, index) => (
+                <li
+                  key={video.id}
+                  className="works-showcase-card works-showcase-flip-card"
+                  data-active={index === activeBimIndex ? "true" : "false"}
+                  style={getBimCardStyle(index)}
+                  aria-hidden={index !== activeBimIndex}
+                >
+                  <figure
+                    className={
+                      video.mediaType === "embed"
+                        ? "works-showcase-media is-embed"
+                        : "works-showcase-media"
+                    }
+                  >
+                    {video.mediaType === "embed" ? (
+                      <iframe
+                        src={video.embedSrc}
+                        title={video.title[lang]}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <button
+                        className="video-preview-trigger"
+                        onClick={() =>
+                          setLightboxVideo({
+                            src: video.src,
+                            title: video.title[lang],
+                          })
+                        }
+                        type="button"
+                        aria-label={
+                          lang === "zh"
+                            ? `打开《${video.title.zh}》并播放原声`
+                            : `Open ${video.title.en} with sound`
+                        }
+                      >
+                        <ViewportVideo
+                          src={video.src}
+                          shouldPlay={!lightboxVideo && isBimInView && activeBimIndex === index}
+                          resetOnPause
+                        />
+                        <span className="video-preview-hint">
+                          {lang === "zh" ? "点击放大并播放原声" : "Click to expand with sound"}
+                        </span>
+                      </button>
+                    )}
+                  </figure>
+                  <div className="works-showcase-info">
+                    <div className="works-showcase-meta">
+                      <span>[{lang === "zh" ? "BIM工程案例分享" : "BIM Case Sharing"}]</span>
+                      <time>{video.year}</time>
+                    </div>
+                    <h3>{video.title[lang]}</h3>
+                    <p>{video.summary[lang]}</p>
+                    {video.mediaType === "embed" ? (
+                      <p className="works-player-tip">
+                        {lang === "zh"
+                          ? "B 站移动端 iframe 方案：界面更简洁，但清晰度与功能受 B 站策略限制。"
+                          : "Bilibili mobile iframe mode: cleaner UI, but quality/features depend on Bilibili policies."}
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-prev"
+              type="button"
+              onClick={() => shiftBimIndex(-1)}
+              disabled={isAtFirstBim}
+              aria-label={lang === "zh" ? "上一条BIM案例" : "Previous BIM case"}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-next"
+              type="button"
+              onClick={() => shiftBimIndex(1)}
+              disabled={isAtLastBim}
+              aria-label={lang === "zh" ? "下一条BIM案例" : "Next BIM case"}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+          <div
+            className="works-showcase-controls"
+            role="group"
+            aria-label={lang === "zh" ? "BIM案例翻页控制" : "BIM showcase paging controls"}
+          >
+            <div
+              className="works-showcase-dots"
+              aria-label={lang === "zh" ? "BIM案例分页" : "BIM showcase pagination"}
+            >
+              {bimCaseVideos.map((video, index) => (
+                <button
+                  key={`bim-dot-${video.id}`}
+                  className="works-showcase-dot"
+                  data-active={index === activeBimIndex ? "true" : "false"}
+                  type="button"
+                  onClick={() => jumpToBimIndex(index)}
+                  aria-label={
+                    lang === "zh"
+                      ? `切换到第 ${index + 1} 条BIM案例`
+                      : `Switch to BIM case ${index + 1}`
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          <p className="works-showcase-gesture-tip">
+            {lang === "zh"
+              ? "使用左右箭头、按钮或横向拖拽翻页。"
+              : "Flip with arrow keys, buttons, or horizontal drag."}
+          </p>
+        </div>
+      </section>
+
+      <section className="process-section" id="process">
+        <div className="container">
+          <span className="section-label">{t.sectionProcess}</span>
+          <h2 className="section-title reveal">{t.processTitle}</h2>
+          <div className="process-grid stagger-up">
+            {t.processItems.map((item, index) => (
+              <article key={item.title} className="process-card reveal-child">
+                <div className="process-icon">
+                  <WandSparkles size={14} />
+                  <span>{`0${index + 1}`}</span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="contact-section" id="contact">
+        <div className="contact-bg">
+          <ViewportVideo src={heroVideo} />
+        </div>
+        <div className="contact-overlay" />
+        <div className="contact-content reveal">
+          <span className="section-label">{t.sectionContact}</span>
+          <h2>{t.contactTitle}</h2>
+          <p>{t.contactBody}</p>
+          <a href="mailto:hello@example.com">
+            {t.contactButton}
+            <ArrowUpRight size={16} />
+          </a>
+        </div>
+      </section>
+
+      {lightboxVideo ? (
+        <div
+          className="video-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={lang === "zh" ? "视频播放窗口" : "Video player window"}
+          onClick={() => setLightboxVideo(null)}
+        >
+          <div className="video-lightbox-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="video-lightbox-head">
+              <p className="video-lightbox-title">{lightboxVideo.title}</p>
+              <button
+                className="video-lightbox-close"
+                onClick={() => setLightboxVideo(null)}
+                type="button"
+              >
+                <X size={16} />
+                <span>{lang === "zh" ? "关闭" : "Close"}</span>
+              </button>
+            </div>
+            <div className="video-lightbox-player">
+              <video controls autoPlay playsInline preload="auto" key={lightboxVideo.src}>
+                <source src={lightboxVideo.src} type="video/mp4" />
+              </video>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <footer className="footer">
+        <p>
+          © {new Date().getFullYear()} {lang === "zh" ? "小杨同学" : "YT striver"} ·{" "}
+          {t.footer}
+        </p>
+      </footer>
+      </div>
+    </main>
+  );
+}

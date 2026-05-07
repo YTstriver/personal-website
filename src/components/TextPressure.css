@@ -1,0 +1,29 @@
+.text-pressure-root {
+  background: transparent;
+  position: relative;
+}
+
+.text-pressure-title {
+  margin: 0;
+  text-align: center;
+  user-select: none;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.text-pressure-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.text-pressure-stroke span {
+  position: relative;
+}
+
+.text-pressure-stroke span::after {
+  content: attr(data-char);
+  left: 0;
+  position: absolute;
+  top: 0;
+  z-index: -1;
+}
