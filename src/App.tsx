@@ -768,7 +768,7 @@ export function App() {
   const backgroundMusicUnlockPendingRef = useRef(false);
 
   const t = content[lang];
-  const heroVideoSrc = resolveVideoSrc(heroVideo);
+  const heroVideoSrc = heroVideo;
   const heroVideoPoster = resolvePosterSrc(heroVideo, heroPoster) ?? heroPoster;
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
@@ -1955,9 +1955,8 @@ export function App() {
             playsInline
             preload="auto"
             poster={heroVideoPoster}
-          >
-            <source src={heroVideoSrc} type="video/mp4" />
-          </video>
+            src={heroVideoSrc}
+          />
           <div className="hero-overlay" />
           <div className="hero-content">
             <div className={`hero-title-container ${lang === "zh" ? "has-avatar" : ""}`}>
