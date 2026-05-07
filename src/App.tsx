@@ -669,7 +669,7 @@ const worksShowcaseChapters = [
   },
 ] as const;
 
-const heroVideo = "/videos/hero-loop-scrub-hq.mp4";
+const heroVideo = "/videos/方块领域.mp4";
 const heroPoster = "/images/hero_bg.jpeg";
 const backgroundMusicSrc = "/audio/kyden-tell-me-if-you-need-me.mp3";
 const backgroundMusicVolume = 0.32;
@@ -683,6 +683,7 @@ const stripLeadingSlash = (value: string) => value.replace(/^\/+/, "");
 const stripTrailingSlash = (value: string) => value.replace(/\/+$/, "");
 const removeQueryAndHash = (value: string) => value.replace(/[?#].*$/, "");
 const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
+const removeVideosPrefix = (value: string) => value.replace(/^\/?videos\//, "");
 
 const joinBaseAndPath = (base: string, path: string) => {
   const normalizedBase = stripTrailingSlash(base);
@@ -692,7 +693,7 @@ const joinBaseAndPath = (base: string, path: string) => {
 
 const resolveVideoSrc = (sourcePath: string) => {
   if (!ossVideoBaseUrl || isAbsoluteUrl(sourcePath)) return sourcePath;
-  return joinBaseAndPath(ossVideoBaseUrl, sourcePath);
+  return joinBaseAndPath(ossVideoBaseUrl, removeVideosPrefix(sourcePath));
 };
 
 const resolvePosterFromVideo = (videoPath: string) => {
