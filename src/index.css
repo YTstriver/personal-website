@@ -2606,23 +2606,25 @@ video {
   }
 
   .hero-works-stage {
-    min-height: 124svh;
-    padding-bottom: clamp(12px, 2.2vh, 20px);
+    min-height: 112svh;
+    padding-bottom: clamp(10px, 1.8vh, 16px);
   }
 
   .hero-works-pin {
     align-items: center;
     height: auto;
     justify-content: center;
-    min-height: 124svh;
-    padding: max(18px, env(safe-area-inset-top)) 0 max(18px, env(safe-area-inset-bottom));
+    min-height: 112svh;
+    padding: max(14px, env(safe-area-inset-top)) 0 max(14px, env(safe-area-inset-bottom));
     position: relative;
     top: auto;
   }
 
   .hero-works-stage .works-showcase-layer {
-    justify-content: flex-start;
-    padding: clamp(28px, 5vh, 56px) 14px clamp(18px, 3vh, 28px);
+    justify-content: center;
+    opacity: min(1, max(0, calc(var(--works-showcase-progress) * 1.22)));
+    padding: clamp(14px, 2.8vh, 24px) 14px clamp(10px, 2vh, 18px);
+    transform: translateY(calc((1 - var(--works-showcase-progress)) * 40px - 8px));
   }
 
   .hero-works-stage .works-showcase-track {
@@ -2662,8 +2664,10 @@ video {
 
   .works-intro-layer {
     gap: 10px;
-    justify-content: flex-start;
-    padding: clamp(26px, 4.2vh, 46px) 16px 0;
+    justify-content: center;
+    opacity: max(0, min(1, calc(1 - (var(--works-showcase-progress) * 1.5))));
+    padding: 0 16px;
+    transform: translateY(calc(var(--works-showcase-progress) * -26px));
   }
 
   .works-intro-title {
