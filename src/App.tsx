@@ -803,7 +803,8 @@ export function App() {
   const backgroundMusicUnlockPendingRef = useRef(false);
 
   const t = content[lang];
-  const heroVideoSrc = resolveVideoSrc(heroVideo);
+  // Keep hero loop on same-origin public path: current OSS bucket does not contain hero loop files.
+  const heroVideoSrc = resolvePublicAssetPath(heroVideo);
   const heroVideoPoster = resolvePosterSrc(heroVideo, heroPoster) ?? heroPoster;
   const worksPages = chunkByPage(works, SHOWCASE_PAGE_SIZE);
   const showcaseCount = isPhoneViewport ? worksPages.length : works.length;
