@@ -1227,7 +1227,7 @@ export function App() {
       const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = clamp01(-rect.top / scrollableRange);
       const showcaseProgress = clamp01((progress - 0.32) / 0.68);
-      const showcasePhase = progress > 0.28 && progress < 0.985;
+      const showcasePhase = progress > 0.2 && progress < 0.992;
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
@@ -1946,6 +1946,13 @@ export function App() {
     };
 
     const onScroll = () => {
+      const sectionProgress = getSectionProgress();
+      syncWorksState(sectionProgress);
+      if (duration > 0) {
+        targetTime = getTargetTime(sectionProgress);
+        renderedTime = targetTime;
+        commitTime(renderedTime, true);
+      }
       scheduleFrame();
     };
 
@@ -2279,7 +2286,7 @@ export function App() {
               <button
                 className="works-showcase-nav works-showcase-nav-side is-prev"
                 type="button"
-                onClick={() => jumpToShowcaseIndex(activeShowcaseIndex - 1)}
+                onClick={() => jumpToShowcaseIndex(activeShowcaseIndexRef.current - 1)}
                 disabled={activeShowcaseIndex <= 0}
                 aria-label={lang === "zh" ? "上一条作品" : "Previous work"}
               >
@@ -2343,7 +2350,7 @@ export function App() {
                               </figure>
                               <div className="works-showcase-info">
                                 <div className="works-showcase-meta">
-                                  <span>[{work.category[lang]}]</span>
+                                  <span>[{work.title[lang]}]</span>
                                 </div>
                                 <h3>{work.title[lang]}</h3>
                                 <p>{work.summary[lang]}</p>
@@ -2411,7 +2418,7 @@ export function App() {
                         </figure>
                         <div className="works-showcase-info">
                           <div className="works-showcase-meta">
-                            <span>[{work.category[lang]}]</span>
+                            <span>[{work.title[lang]}]</span>
                           </div>
                           <h3>{work.title[lang]}</h3>
                           <p>{work.summary[lang]}</p>
@@ -2429,7 +2436,7 @@ export function App() {
               <button
                 className="works-showcase-nav works-showcase-nav-side is-next"
                 type="button"
-                onClick={() => jumpToShowcaseIndex(activeShowcaseIndex + 1)}
+                onClick={() => jumpToShowcaseIndex(activeShowcaseIndexRef.current + 1)}
                 disabled={activeShowcaseIndex >= showcaseCount - 1}
                 aria-label={lang === "zh" ? "下一条作品" : "Next work"}
               >
@@ -2520,6 +2527,15 @@ export function App() {
             className="works-showcase-track works-showcase-flip-track story-showcase-track"
             ref={urbanTrackViewportRef}
           >
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-prev"
+              type="button"
+              onClick={() => jumpToUrbanIndex(activeUrbanIndexRef.current - 1)}
+              disabled={activeUrbanIndex <= 0}
+              aria-label={lang === "zh" ? "上一页城市作品" : "Previous urban page"}
+            >
+              <ChevronLeft size={18} />
+            </button>
             <ul className="works-showcase-list works-showcase-stack story-showcase-list">
               {urbanPages.map((page, pageIndex) => (
                 <li
@@ -2593,6 +2609,15 @@ export function App() {
                 </li>
               ))}
             </ul>
+            <button
+              className="works-showcase-nav works-showcase-nav-side is-next"
+              type="button"
+              onClick={() => jumpToUrbanIndex(activeUrbanIndexRef.current + 1)}
+              disabled={activeUrbanIndex >= urbanPages.length - 1}
+              aria-label={lang === "zh" ? "下一页城市作品" : "Next urban page"}
+            >
+              <ChevronRight size={18} />
+            </button>
           </div>
           <div
             className="works-showcase-controls"
