@@ -599,9 +599,9 @@ video {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  justify-content: center;
+  justify-content: flex-start;
   opacity: max(0, min(1, calc(1 - ((var(--works-stage-progress) - 0.02) * 4.8))));
-  padding: 0 24px;
+  padding: clamp(30px, 4.8vh, 56px) 24px 0;
   pointer-events: auto;
   text-align: center;
   transform: translateY(calc(var(--works-stage-progress) * -56px));
