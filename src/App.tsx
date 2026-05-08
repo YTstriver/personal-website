@@ -1217,13 +1217,16 @@ export function App() {
     }
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
+    const showcaseStart = isPhoneViewport ? 0.08 : 0.2;
+    const showcaseEnd = isPhoneViewport ? 0.985 : 0.992;
+    const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
     const syncProgress = () => {
       const rect = section.getBoundingClientRect();
       const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = clamp01(-rect.top / scrollableRange);
-      const showcaseProgress = clamp01((progress - 0.32) / 0.68);
-      const showcasePhase = progress > 0.2 && progress < 0.992;
+      const showcaseProgress = clamp01((progress - showcaseStart) / showcaseSpan);
+      const showcasePhase = progress > showcaseStart && progress < showcaseEnd;
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
@@ -1243,7 +1246,7 @@ export function App() {
       window.removeEventListener("resize", syncProgress);
       window.removeEventListener("load", syncProgress);
     };
-  }, []);
+  }, [isPhoneViewport]);
 
   useEffect(() => {
     const section = worksStageRef.current;
