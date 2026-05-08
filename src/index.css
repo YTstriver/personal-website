@@ -850,6 +850,14 @@ video {
   touch-action: pan-y;
 }
 
+.hero-works-stage .works-showcase-track,
+.hero-works-stage .works-showcase-track .works-showcase-card,
+.hero-works-stage .works-showcase-track .works-showcase-grid-item,
+.hero-works-stage .works-showcase-track .works-showcase-info,
+.hero-works-stage .works-showcase-track .works-showcase-info * {
+  cursor: zoom-in;
+}
+
 .works-showcase-list {
   display: flex;
   gap: clamp(14px, 1.8vw, 26px);
@@ -977,15 +985,19 @@ video {
 }
 
 .works-showcase-nav-side {
-  display: none;
+  display: inline-flex;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
 }
 
 .works-showcase-nav-side.is-prev {
-  left: clamp(-54px, -4.2vw, -18px);
+  left: clamp(8px, 1.2vw, 16px);
 }
 
 .works-showcase-nav-side.is-next {
-  right: clamp(-54px, -4.2vw, -18px);
+  right: clamp(8px, 1.2vw, 16px);
 }
 
 .works-showcase-nav:hover:not(:disabled) {
@@ -1706,26 +1718,18 @@ video {
   background: radial-gradient(circle at 50% 42%, rgba(89, 197, 255, 0.14), transparent 72%);
   border: 1px dashed rgba(171, 222, 255, 0.22);
   border-radius: 18px;
-  cursor: grab;
+  cursor: default;
   margin-top: 0;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   padding:
     calc(var(--film-rail-size) + var(--belt-pad-y))
     var(--belt-pad-x);
   position: relative;
   scrollbar-width: none;
-  touch-action: pan-x;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
   z-index: 2;
-}
-
-.photo-belt-stage.is-mobile-scroll {
-  scroll-snap-type: x proximity;
-}
-
-.photo-belt-stage.is-mobile-scroll .photo-belt-item {
-  scroll-snap-align: start;
 }
 
 .photo-belt-stage::-webkit-scrollbar {
@@ -1775,15 +1779,12 @@ video {
 }
 
 .photo-belt-track {
-  animation: photo-belt-loop 58s linear infinite;
+  animation: photo-belt-loop 42s linear infinite;
   display: flex;
   gap: var(--photo-belt-gap);
+  position: relative;
   width: max-content;
   will-change: transform;
-}
-
-.photo-belt-track.is-mobile-scroll {
-  animation: none;
 }
 
 .photo-belt-track.is-paused {
@@ -2112,7 +2113,7 @@ video {
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 16px;
   box-shadow: 0 28px 78px rgba(0, 0, 0, 0.6);
-  max-width: min(1200px, 94vw);
+  max-width: min(1080px, 94vw);
   overflow: hidden;
   width: 100%;
 }
@@ -2146,13 +2147,17 @@ video {
 }
 
 .video-lightbox-player {
+  aspect-ratio: 16 / 9;
   background: #000;
+  max-height: calc(100vh - 168px);
 }
 
 .video-lightbox-player video {
   background: #000;
   display: block;
-  max-height: calc(100vh - 168px);
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
   width: 100%;
 }
 
@@ -2597,21 +2602,22 @@ video {
   }
 
   .hero-works-stage {
-    min-height: auto;
+    min-height: 100svh;
     padding-bottom: clamp(12px, 2.2vh, 20px);
   }
 
   .hero-works-pin {
-    align-items: flex-start;
+    align-items: center;
     height: auto;
+    justify-content: center;
     min-height: 100svh;
-    padding: 66px 0 18px;
+    padding: max(18px, env(safe-area-inset-top)) 0 max(18px, env(safe-area-inset-bottom));
     position: relative;
     top: auto;
   }
 
   .hero-works-stage .works-showcase-layer {
-    padding: 6px 14px 14px;
+    padding: 8px 14px 14px;
   }
 
   .hero-works-stage .works-showcase-track {
@@ -2808,7 +2814,8 @@ video {
   }
 
   .video-lightbox-player video {
-    max-height: min(52svh, calc(100svh - 182px));
+    height: 100%;
+    max-height: none;
     object-fit: contain;
   }
 
@@ -2906,9 +2913,9 @@ video {
 
   .contact-direct-info {
     margin-top: 20px;
-    max-width: 100%;
-    padding: 12px 12px 14px;
-    width: 100%;
+    max-width: min(86vw, 360px);
+    padding: 12px 14px 14px;
+    width: min(86vw, 360px);
   }
 
   .contact-direct-row {
