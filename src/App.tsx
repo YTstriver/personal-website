@@ -690,6 +690,8 @@ const backgroundMusicSrc = "/audio/kyden-tell-me-if-you-need-me.mp3";
 const backgroundMusicVolume = 0.32;
 const shouldAutoplayBackgroundMusic = !import.meta.env.DEV;
 const SHOWCASE_PAGE_SIZE = 4;
+const PHONE_VIEWPORT_MEDIA_QUERY =
+  "(max-width: 760px), ((hover: none) and (pointer: coarse) and (max-width: 980px))";
 const strictTrafficMode = import.meta.env.VITE_STRICT_TRAFFIC_MODE !== "false";
 const ossVideoBaseUrl = (import.meta.env.VITE_OSS_VIDEO_BASE_URL ?? "").trim();
 const ossVideoPosterBaseUrl = (import.meta.env.VITE_OSS_VIDEO_POSTER_BASE_URL ?? "").trim();
@@ -875,7 +877,7 @@ export function App() {
 
   useEffect(() => {
     const liteMedia = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
-    const phoneMedia = window.matchMedia("(max-width: 760px)");
+    const phoneMedia = window.matchMedia(PHONE_VIEWPORT_MEDIA_QUERY);
     const syncViewportModes = () => {
       setIsLiteFloatingLines(liteMedia.matches);
       setIsPhoneViewport(phoneMedia.matches);
@@ -1218,7 +1220,7 @@ export function App() {
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
     const showcaseStart = isPhoneViewport ? 0.22 : 0.2;
-    const showcaseEnd = isPhoneViewport ? 0.988 : 0.992;
+    const showcaseEnd = isPhoneViewport ? 1.001 : 0.992;
     const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
     const syncProgress = () => {
@@ -1226,7 +1228,11 @@ export function App() {
       const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = clamp01(-rect.top / scrollableRange);
       const showcaseProgress = clamp01((progress - showcaseStart) / showcaseSpan);
-      const showcasePhase = progress > showcaseStart && progress < showcaseEnd;
+      const storyTop = storySectionRef.current?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      const storyIncoming = storyTop <= window.innerHeight * 0.98;
+      const showcasePhase = isPhoneViewport
+        ? progress > showcaseStart && !storyIncoming
+        : progress > showcaseStart && progress < showcaseEnd;
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
@@ -2024,7 +2030,7 @@ export function App() {
     const section = worksStageRef.current;
     if (!section) return;
 
-    const isPhone = window.matchMedia("(max-width: 760px)").matches;
+    const isPhone = window.matchMedia(PHONE_VIEWPORT_MEDIA_QUERY).matches;
     const sectionTop = section.getBoundingClientRect().top + window.scrollY;
     const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
     const showcaseProgress =
