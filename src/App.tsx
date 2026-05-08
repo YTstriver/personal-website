@@ -1217,8 +1217,8 @@ export function App() {
     }
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
-    const showcaseStart = isPhoneViewport ? 0.14 : 0.2;
-    const showcaseEnd = isPhoneViewport ? 0.985 : 0.992;
+    const showcaseStart = isPhoneViewport ? 0.22 : 0.2;
+    const showcaseEnd = isPhoneViewport ? 0.988 : 0.992;
     const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
     const syncProgress = () => {
@@ -2024,9 +2024,11 @@ export function App() {
     const section = worksStageRef.current;
     if (!section) return;
 
+    const isPhone = window.matchMedia("(max-width: 760px)").matches;
     const sectionTop = section.getBoundingClientRect().top + window.scrollY;
     const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
-    const showcaseProgress = chapterIndex === 3 ? 0.42 : 0.34;
+    const showcaseProgress =
+      chapterIndex === 3 ? (isPhone ? 0.68 : 0.42) : chapterIndex === 0 ? (isPhone ? 0.58 : 0.34) : 0.34;
 
     window.scrollTo({
       top: sectionTop + scrollableRange * showcaseProgress,
@@ -2035,6 +2037,9 @@ export function App() {
 
     if (chapterIndex === 0) {
       jumpToShowcaseIndex(0);
+      if (isPhone) {
+        window.setTimeout(() => jumpToShowcaseIndex(0), 260);
+      }
     } else if (chapterIndex === 3) {
       jumpToShowcaseIndex(Math.min(showcaseCount - 1, 1));
     }
