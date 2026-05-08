@@ -2622,9 +2622,9 @@ video {
 
   .hero-works-stage .works-showcase-layer {
     justify-content: center;
-    opacity: min(1, max(0, calc(var(--works-showcase-progress) * 1.22)));
+    opacity: min(1, max(0, calc((var(--works-showcase-progress) - 0.22) * 1.72)));
     padding: clamp(14px, 2.8vh, 24px) 14px clamp(10px, 2vh, 18px);
-    transform: translateY(calc((1 - var(--works-showcase-progress)) * 40px - 8px));
+    transform: translateY(calc((1 - var(--works-showcase-progress)) * 34px - 8px));
   }
 
   .hero-works-stage .works-showcase-track {
@@ -2665,9 +2665,9 @@ video {
   .works-intro-layer {
     gap: 10px;
     justify-content: center;
-    opacity: max(0, min(1, calc(1 - (var(--works-showcase-progress) * 1.5))));
+    opacity: max(0, min(1, calc(1 - (var(--works-showcase-progress) * 2.25))));
     padding: 0 16px;
-    transform: translateY(calc(var(--works-showcase-progress) * -26px));
+    transform: translateY(calc(var(--works-showcase-progress) * -22px));
   }
 
   .works-intro-title {
@@ -2923,22 +2923,29 @@ video {
 
   .contact-direct-info {
     margin-top: 20px;
-    max-width: min(86vw, 360px);
+    max-width: min(94vw, 520px);
     padding: 12px 14px 14px;
-    width: min(86vw, 360px);
+    width: fit-content;
   }
 
   .contact-direct-row {
-    gap: 6px;
+    justify-items: center;
+    gap: 8px;
     grid-template-columns: minmax(0, 1fr);
+    text-align: center;
   }
 
   .contact-direct-label {
+    display: inline-flex;
     font-size: 0.72rem;
     letter-spacing: 0.08em;
+    margin: 0 auto;
+    text-align: center;
+    width: fit-content;
   }
 
   .contact-direct-values {
+    align-items: center;
     gap: 6px;
   }
 

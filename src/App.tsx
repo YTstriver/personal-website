@@ -1217,7 +1217,7 @@ export function App() {
     }
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
-    const showcaseStart = isPhoneViewport ? 0.08 : 0.2;
+    const showcaseStart = isPhoneViewport ? 0.14 : 0.2;
     const showcaseEnd = isPhoneViewport ? 0.985 : 0.992;
     const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
