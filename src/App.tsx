@@ -1778,11 +1778,10 @@ export function App() {
     const clamp01 = (value: number) => clamp(value, 0, 1);
 
     const getSectionProgress = () => {
-      const rootScrollTop = document.scrollingElement?.scrollTop ?? 0;
-      const currentTop = Math.max(window.scrollY, rootScrollTop);
-      const sectionTop = section.offsetTop;
+      // Use viewport geometry to keep desktop scrub stable across layout/caching differences.
+      const rect = section.getBoundingClientRect();
       const virtualRange = Math.max(window.innerHeight * scrubViewportFactor, 1);
-      const linearProgress = clamp01((currentTop - sectionTop) / virtualRange);
+      const linearProgress = clamp01(-rect.top / virtualRange);
       return linearProgress ** scrubCurve;
     };
 
