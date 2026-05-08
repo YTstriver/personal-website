@@ -1,5 +1,7 @@
 import {
   Building2,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   Film,
   PlaneTakeoff,
@@ -196,6 +198,7 @@ const works: WorkItem[] = [
     link: "#",
     mediaSrc: "/videos/地铁站.mp4",
     mediaType: "video",
+    posterSrc: "/images/posters/metro-station.jpg",
     previewTime: 10,
     summary: {
       en: "Urban transit sequence focused on pacing, city motion, and documentary mood.",
@@ -216,6 +219,7 @@ const works: WorkItem[] = [
     link: "#",
     mediaSrc: "/videos/方块领域.mp4",
     mediaType: "video",
+    posterSrc: "/images/posters/cubic-domain.jpg",
     previewTime: 9,
     summary: {
       en: "A kinetic cube world synced with electronic rhythm and accelerated light pulses.",
@@ -236,6 +240,7 @@ const works: WorkItem[] = [
     link: "#",
     mediaSrc: "/videos/迷失竹林.mp4",
     mediaType: "video",
+    posterSrc: "/images/posters/lost-in-bamboo.jpg",
     previewTime: 9,
     summary: {
       en: "A bamboo-forest drift with ambient pace, travel solitude, and natural textures.",
@@ -256,6 +261,7 @@ const works: WorkItem[] = [
     link: "#",
     mediaSrc: "/videos/迷失雪山.mp4",
     mediaType: "video",
+    posterSrc: "/images/posters/lost-in-snow-mountain.jpg",
     previewTime: 4,
     summary: {
       en: "Snow-mountain sequence with sparse rhythm, scale contrast, and long-lens calm.",
@@ -274,6 +280,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-02",
     mediaType: "video",
     previewTime: 4,
+    posterSrc: "/images/posters/zhimaling-hike.jpg",
     src: "/videos/止马岭徒步.mp4",
     summary: {
       en: "A hiking route in Zhimaling focused on trail rhythm and natural texture.",
@@ -289,6 +296,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-05",
     mediaType: "video",
     previewTime: 5,
+    posterSrc: "/images/posters/xinghua-trip.jpg",
     src: "/videos/兴化之旅.mp4",
     summary: {
       en: "A Xinghua field journey featuring water-town texture and seasonal rhythm.",
@@ -304,6 +312,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-06",
     mediaType: "video",
     previewTime: 1,
+    posterSrc: "/images/posters/yangshuo-trip.jpg",
     src: "/videos/阳朔之行.mp4",
     summary: {
       en: "A Yangshuo route focused on river-mountain scale and relaxed travel pacing.",
@@ -319,6 +328,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-07",
     mediaType: "video",
     previewTime: 5,
+    posterSrc: "/images/posters/gaochun-trip.jpg",
     src: "/videos/高淳之行.mp4",
     summary: {
       en: "A Gaochun visit capturing lakeside paths, town cadence, and local light.",
@@ -334,6 +344,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-01",
     mediaType: "video",
     previewTime: 8,
+    posterSrc: "/images/posters/huangshan-jiyubei-ridge.jpg",
     src: "/videos/鲫鱼背.mp4",
     summary: {
       en: "A ridge run at Huangshan Jiyubei with wide views and shifting mountain weather.",
@@ -349,6 +360,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-03",
     mediaType: "video",
     previewTime: 8,
+    posterSrc: "/images/posters/nanjing-mini-sichuan-tibet-route.jpg",
     src: "/videos/南京小川藏线.mp4",
     summary: {
       en: "Cycle through the rolling route known as Nanjing's mini Sichuan-Tibet line.",
@@ -364,6 +376,7 @@ const urbanEscapeVideos: UrbanEscapeItem[] = [
     id: "urban-04",
     mediaType: "video",
     previewTime: 1,
+    posterSrc: "/images/posters/wuxiang-temple-reservoir.jpg",
     src: "/videos/无想寺水库.mp4",
     summary: {
       en: "A calm waterside journey around Wuxiang Temple Reservoir.",
@@ -382,6 +395,7 @@ const bimCaseVideos: UrbanEscapeItem[] = [
     id: "bim-01",
     mediaType: "video",
     previewTime: 7,
+    posterSrc: "/images/posters/lianyungang-xuwei-medical-rescue-center-bim.jpg",
     src: "/videos/连云港徐圩新区医疗救援中心BIM+技术应用.mp4",
     summary: {
       en: "BIM+ technology deployment for Xuwei New District medical rescue center in Lianyungang.",
@@ -397,6 +411,7 @@ const bimCaseVideos: UrbanEscapeItem[] = [
     id: "bim-02",
     mediaType: "video",
     previewTime: 5,
+    posterSrc: "/images/posters/nanjing-panyao-fg-bim-integration.jpg",
     src: "/videos/南京潘窑F、G地块施工阶段BIM综合应用与探索.mp4",
     summary: {
       en: "Integrated BIM application and site-stage exploration across Nanjing Panyao F/G plots.",
@@ -412,6 +427,7 @@ const bimCaseVideos: UrbanEscapeItem[] = [
     id: "bim-04",
     mediaType: "video",
     previewTime: 6,
+    posterSrc: "/images/posters/airport-3rd-road-community-cim-pilot.jpg",
     src: "/videos/机场三路社区中心智能建造CIM试点项目的应用与探索.mp4",
     summary: {
       en: "Application and pilot exploration of smart construction + CIM at Airport 3rd Road Community Center.",
@@ -427,6 +443,7 @@ const bimCaseVideos: UrbanEscapeItem[] = [
     id: "bim-03",
     mediaType: "video",
     previewTime: 6,
+    posterSrc: "/images/posters/bim-epc-large-complex.jpg",
     src: "/videos/BIM+EPC-在大型综合体项目中的应用与探索.mp4",
     summary: {
       en: "BIM + EPC workflow in a large mixed-use complex, from model governance to execution.",
@@ -667,7 +684,7 @@ const worksShowcaseChapters = [
   },
 ] as const;
 
-const heroVideo = "/videos/hero.mp4";
+const heroVideo = "/videos/hero-loop-scrub-hq.mp4";
 const heroPoster = "/images/hero_bg.jpeg";
 const backgroundMusicSrc = "/audio/kyden-tell-me-if-you-need-me.mp3";
 const backgroundMusicVolume = 0.32;
@@ -677,6 +694,7 @@ const strictTrafficMode = import.meta.env.VITE_STRICT_TRAFFIC_MODE !== "false";
 const ossVideoBaseUrl = (import.meta.env.VITE_OSS_VIDEO_BASE_URL ?? "").trim();
 const ossVideoPosterBaseUrl = (import.meta.env.VITE_OSS_VIDEO_POSTER_BASE_URL ?? "").trim();
 const ossPhotoBaseUrl = (import.meta.env.VITE_OSS_PHOTO_BASE_URL ?? "").trim();
+const viteBaseUrl = (import.meta.env.BASE_URL ?? "/").trim();
 
 const stripLeadingSlash = (value: string) => value.replace(/^\/+/, "");
 const stripTrailingSlash = (value: string) => value.replace(/\/+$/, "");
@@ -690,8 +708,14 @@ const joinBaseAndPath = (base: string, path: string) => {
   return `${normalizedBase}/${normalizedPath}`;
 };
 
+const resolvePublicAssetPath = (assetPath: string) => {
+  if (isAbsoluteUrl(assetPath)) return assetPath;
+  return joinBaseAndPath(viteBaseUrl, assetPath);
+};
+
 const resolveVideoSrc = (sourcePath: string) => {
-  if (!ossVideoBaseUrl || isAbsoluteUrl(sourcePath)) return sourcePath;
+  if (isAbsoluteUrl(sourcePath)) return sourcePath;
+  if (!ossVideoBaseUrl) return resolvePublicAssetPath(sourcePath);
   return joinBaseAndPath(ossVideoBaseUrl, removeVideosPrefix(sourcePath));
 };
 
@@ -707,14 +731,17 @@ const resolvePosterFromVideo = (videoPath: string) => {
 
 const resolvePosterSrc = (videoPath: string, posterPath?: string) => {
   if (posterPath) {
-    if (isAbsoluteUrl(posterPath) || posterPath.startsWith("/")) return posterPath;
+    if (isAbsoluteUrl(posterPath)) return posterPath;
+    if (posterPath.startsWith("/")) return resolvePublicAssetPath(posterPath);
     if (ossVideoPosterBaseUrl) return joinBaseAndPath(ossVideoPosterBaseUrl, posterPath);
+    return resolvePublicAssetPath(posterPath);
   }
   return resolvePosterFromVideo(videoPath);
 };
 
 const resolvePhotoSrc = (sourcePath: string) => {
-  if (!ossPhotoBaseUrl || isAbsoluteUrl(sourcePath)) return sourcePath;
+  if (isAbsoluteUrl(sourcePath)) return sourcePath;
+  if (!ossPhotoBaseUrl) return resolvePublicAssetPath(sourcePath);
   return joinBaseAndPath(ossPhotoBaseUrl, stripLeadingSlash(sourcePath));
 };
 
@@ -739,6 +766,7 @@ export function App() {
   const [isPhoneViewport, setIsPhoneViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [lightboxVideo, setLightboxVideo] = useState<{
+    posterSrc?: string;
     src: string;
     title: string;
   } | null>(null);
@@ -746,7 +774,6 @@ export function App() {
     src: string;
     title: string;
   } | null>(null);
-  const [isPhotoArchiveHovered, setIsPhotoArchiveHovered] = useState(false);
   const [isPhotoArchiveDragging, setIsPhotoArchiveDragging] = useState(false);
   const [failedPreviewPosters, setFailedPreviewPosters] = useState<Record<string, true>>({});
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -784,8 +811,7 @@ export function App() {
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
   const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
-  const isPhotoArchivePaused =
-    isPhotoArchiveHovered || isPhotoArchiveDragging || Boolean(lightboxImage);
+  const isPhotoArchivePaused = isPhotoArchiveDragging || Boolean(lightboxImage);
   const useHeroAutoplayMode = isPhoneViewport || prefersReducedMotion;
 
   const renderVideoPreview = (params: {
@@ -1416,55 +1442,6 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (!isPhoneViewport) return;
-    const stage = photoBeltStageRef.current;
-    if (!stage) return;
-
-    let rafId = 0;
-    let previousTs = performance.now();
-    const speedPxPerSec = 18;
-
-    const getLoopEdge = () => stage.scrollWidth / 2;
-
-    const normalizeScroll = () => {
-      const loopEdge = getLoopEdge();
-      if (!Number.isFinite(loopEdge) || loopEdge <= 0) return;
-      if (stage.scrollLeft >= loopEdge) {
-        stage.scrollLeft -= loopEdge;
-      } else if (stage.scrollLeft < 0) {
-        stage.scrollLeft += loopEdge;
-      }
-    };
-
-    const kickstart = () => {
-      const loopEdge = getLoopEdge();
-      if (!Number.isFinite(loopEdge) || loopEdge <= 0) return;
-      if (stage.scrollLeft <= 1) {
-        stage.scrollLeft = loopEdge * 0.5;
-      }
-    };
-
-    const tick = (timestamp: number) => {
-      const deltaSec = Math.min((timestamp - previousTs) / 1000, 0.08);
-      previousTs = timestamp;
-
-      if (!isPhotoArchivePaused && stage.scrollWidth > stage.clientWidth + 2) {
-        stage.scrollLeft += speedPxPerSec * deltaSec;
-        normalizeScroll();
-      }
-
-      rafId = window.requestAnimationFrame(tick);
-    };
-
-    kickstart();
-    rafId = window.requestAnimationFrame(tick);
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-    };
-  }, [isPhoneViewport, isPhotoArchivePaused]);
-
-  useEffect(() => {
     const section = bimSectionRef.current;
     if (!section) return;
 
@@ -1993,8 +1970,9 @@ export function App() {
     };
   }, [useHeroAutoplayMode]);
 
-  const openLightboxVideo = (videoSrc: string, title: string) => {
+  const openLightboxVideo = (videoSrc: string, title: string, posterSrc?: string) => {
     setLightboxVideo({
+      posterSrc: resolvePosterSrc(videoSrc, posterSrc),
       src: resolveVideoSrc(videoSrc),
       title,
     });
@@ -2002,7 +1980,7 @@ export function App() {
 
   const openVideoLightbox = (work: WorkItem) => {
     if (work.mediaType !== "video") return;
-    openLightboxVideo(work.mediaSrc, work.title[lang]);
+    openLightboxVideo(work.mediaSrc, work.title[lang], work.posterSrc);
   };
 
   const stackedRevealStep = 2.2;
@@ -2298,6 +2276,15 @@ export function App() {
             </div>
 
             <div className="works-showcase-track works-showcase-flip-track" ref={worksTrackViewportRef}>
+              <button
+                className="works-showcase-nav works-showcase-nav-side is-prev"
+                type="button"
+                onClick={() => jumpToShowcaseIndex(activeShowcaseIndex - 1)}
+                disabled={activeShowcaseIndex <= 0}
+                aria-label={lang === "zh" ? "上一条作品" : "Previous work"}
+              >
+                <ChevronLeft size={18} />
+              </button>
               <ul className="works-showcase-list works-showcase-stack">
                 {isPhoneViewport
                   ? worksPages.map((page, pageIndex) => (
@@ -2439,6 +2426,15 @@ export function App() {
                       </li>
                     ))}
               </ul>
+              <button
+                className="works-showcase-nav works-showcase-nav-side is-next"
+                type="button"
+                onClick={() => jumpToShowcaseIndex(activeShowcaseIndex + 1)}
+                disabled={activeShowcaseIndex >= showcaseCount - 1}
+                aria-label={lang === "zh" ? "下一条作品" : "Next work"}
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
             <div
               className="works-showcase-controls"
@@ -2556,7 +2552,7 @@ export function App() {
                             <button
                               className="video-preview-trigger"
                               onClick={() =>
-                                openLightboxVideo(video.src, video.title[lang])
+                                openLightboxVideo(video.src, video.title[lang], video.posterSrc)
                               }
                               type="button"
                               aria-label={
@@ -2698,7 +2694,7 @@ export function App() {
                             <button
                               className="video-preview-trigger"
                               onClick={() =>
-                                openLightboxVideo(video.src, video.title[lang])
+                                openLightboxVideo(video.src, video.title[lang], video.posterSrc)
                               }
                               type="button"
                               aria-label={
@@ -2783,8 +2779,8 @@ export function App() {
             <h2>{lang === "zh" ? "光影行纪档案" : "Light Journey Archive"}</h2>
             <p>
               {lang === "zh"
-                ? "武汉之行 · 已处理照片精选，重构为更具叙事感的图像版式。"
-                : "Wuhan photo selection re-edited into an editorial narrative layout."}
+                ? "漫游手记 · 用光影与构图，重构旅途里的叙事瞬间。"
+                : "Travel notes rebuilt with light and composition to capture narrative moments."}
             </p>
             <ul className="works-showcase-categories story-showcase-categories">
               {worksShowcaseChapters.map((chapter, index) => (
@@ -2807,27 +2803,12 @@ export function App() {
 
           <div className="photo-archive-panel">
             <div
-              className={`photo-belt-stage ${isPhotoArchiveDragging ? "is-dragging" : ""} ${
-                isPhoneViewport ? "is-mobile-scroll" : ""
-              }`}
+              className={`photo-belt-stage ${isPhotoArchiveDragging ? "is-dragging" : ""}`}
               ref={photoBeltStageRef}
               role="list"
               aria-label={lang === "zh" ? "武汉照片档案" : "Wuhan photo archive"}
-              onMouseEnter={() => setIsPhotoArchiveHovered(true)}
-              onMouseLeave={() => setIsPhotoArchiveHovered(false)}
-              onFocusCapture={() => setIsPhotoArchiveHovered(true)}
-              onBlurCapture={(event) => {
-                const nextTarget = event.relatedTarget as Node | null;
-                if (!nextTarget || !event.currentTarget.contains(nextTarget)) {
-                  setIsPhotoArchiveHovered(false);
-                }
-              }}
             >
-              <div
-                className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""} ${
-                  isPhoneViewport ? "is-mobile-scroll" : ""
-                }`}
-              >
+              <div className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""}`}>
                 {photoBeltItems.map((photo, index) => (
                   <article
                     key={`${photo.id}-${index}`}
@@ -2984,7 +2965,7 @@ export function App() {
                 autoPlay
                 playsInline
                 preload="metadata"
-                poster={resolvePosterFromVideo(lightboxVideo.src)}
+                poster={lightboxVideo.posterSrc ?? resolvePosterFromVideo(lightboxVideo.src)}
                 key={lightboxVideo.src}
               >
                 <source src={lightboxVideo.src} type="video/mp4" />
