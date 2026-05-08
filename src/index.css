@@ -2606,23 +2606,23 @@ video {
   }
 
   .hero-works-stage {
-    min-height: 168svh;
-    padding-bottom: clamp(16px, 2.8vh, 26px);
+    min-height: 124svh;
+    padding-bottom: clamp(12px, 2.2vh, 20px);
   }
 
   .hero-works-pin {
     align-items: center;
     height: auto;
     justify-content: center;
-    min-height: 168svh;
-    padding: max(22px, env(safe-area-inset-top)) 0 max(22px, env(safe-area-inset-bottom));
+    min-height: 124svh;
+    padding: max(18px, env(safe-area-inset-top)) 0 max(18px, env(safe-area-inset-bottom));
     position: relative;
     top: auto;
   }
 
   .hero-works-stage .works-showcase-layer {
-    justify-content: center;
-    padding: clamp(20px, 3.5vh, 34px) 14px clamp(18px, 3vh, 28px);
+    justify-content: flex-start;
+    padding: clamp(28px, 5vh, 56px) 14px clamp(18px, 3vh, 28px);
   }
 
   .hero-works-stage .works-showcase-track {
@@ -2662,7 +2662,8 @@ video {
 
   .works-intro-layer {
     gap: 10px;
-    padding: 0 16px;
+    justify-content: flex-start;
+    padding: clamp(26px, 4.2vh, 46px) 16px 0;
   }
 
   .works-intro-title {
