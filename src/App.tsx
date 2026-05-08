@@ -764,7 +764,6 @@ export function App() {
   const [isBimInView, setIsBimInView] = useState(false);
   const [isLiteFloatingLines, setIsLiteFloatingLines] = useState(false);
   const [isPhoneViewport, setIsPhoneViewport] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [lightboxVideo, setLightboxVideo] = useState<{
     posterSrc?: string;
     src: string;
@@ -812,7 +811,7 @@ export function App() {
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
   const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
   const isPhotoArchivePaused = isPhotoArchiveDragging || Boolean(lightboxImage);
-  const useHeroAutoplayMode = isPhoneViewport || prefersReducedMotion;
+  const useHeroAutoplayMode = isPhoneViewport;
 
   const renderVideoPreview = (params: {
     posterSrc?: string;
@@ -876,11 +875,9 @@ export function App() {
   useEffect(() => {
     const liteMedia = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
     const phoneMedia = window.matchMedia("(max-width: 760px)");
-    const reducedMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
     const syncViewportModes = () => {
       setIsLiteFloatingLines(liteMedia.matches);
       setIsPhoneViewport(phoneMedia.matches);
-      setPrefersReducedMotion(reducedMedia.matches);
     };
 
     syncViewportModes();
@@ -896,11 +893,9 @@ export function App() {
 
     const removeLite = addListener(liteMedia, syncViewportModes);
     const removePhone = addListener(phoneMedia, syncViewportModes);
-    const removeReduced = addListener(reducedMedia, syncViewportModes);
     return () => {
       removeLite();
       removePhone();
-      removeReduced();
     };
   }, []);
 
