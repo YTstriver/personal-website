@@ -2625,6 +2625,9 @@ video {
     opacity: min(1, max(0, calc((var(--works-showcase-progress) - 0.22) * 1.72)));
     padding: clamp(14px, 2.8vh, 24px) 14px clamp(10px, 2vh, 18px);
     transform: translateY(calc((1 - var(--works-showcase-progress)) * 34px - 8px));
+    transition:
+      opacity 0.12s linear,
+      transform 0.12s linear;
   }
 
   .hero-works-stage .works-showcase-track {
@@ -2668,6 +2671,30 @@ video {
     opacity: max(0, min(1, calc(1 - (var(--works-showcase-progress) * 2.25))));
     padding: 0 16px;
     transform: translateY(calc(var(--works-showcase-progress) * -22px));
+    transition:
+      opacity 0.12s linear,
+      transform 0.12s linear;
+    visibility: visible;
+  }
+
+  .hero-works-stage[data-phase="showcase"] .works-intro-layer {
+    opacity: 0 !important;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .hero-works-stage:not([data-phase="showcase"]) .works-showcase-layer {
+    opacity: 0 !important;
+    pointer-events: none;
+    transform: translateY(14px);
+    visibility: hidden;
+  }
+
+  .hero-works-stage[data-phase="showcase"] .works-showcase-layer {
+    opacity: 1 !important;
+    pointer-events: auto;
+    transform: translateY(-8px);
+    visibility: visible;
   }
 
   .works-intro-title {
