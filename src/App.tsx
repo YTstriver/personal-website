@@ -1767,7 +1767,7 @@ export function App() {
     const seekThreshold = 1 / 48;
     const minSeekIntervalMs = 1000 / 24;
     const scrubCurve = 1.15;
-    const scrubViewportFactor = 0.8;
+    const scrubViewportFactor = 1.08;
     const scrubSpan = 0.9;
     const worksStart = 0;
     const worksEnd = 1;
@@ -1778,10 +1778,11 @@ export function App() {
     const clamp01 = (value: number) => clamp(value, 0, 1);
 
     const getSectionProgress = () => {
-      const rect = section.getBoundingClientRect();
-      const stickyRange = Math.max(section.offsetHeight - window.innerHeight, 1);
-      const virtualRange = Math.max(stickyRange, window.innerHeight * scrubViewportFactor);
-      const linearProgress = clamp01(-rect.top / virtualRange);
+      const rootScrollTop = document.scrollingElement?.scrollTop ?? 0;
+      const currentTop = Math.max(window.scrollY, rootScrollTop);
+      const sectionTop = section.offsetTop;
+      const virtualRange = Math.max(window.innerHeight * scrubViewportFactor, 1);
+      const linearProgress = clamp01((currentTop - sectionTop) / virtualRange);
       return linearProgress ** scrubCurve;
     };
 
