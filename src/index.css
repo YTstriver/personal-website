@@ -332,7 +332,7 @@ video {
 }
 
 .hero-scrub {
-  height: 102vh;
+  height: 112vh;
 }
 
 .hero-pin {
@@ -993,11 +993,11 @@ video {
 }
 
 .works-showcase-nav-side.is-prev {
-  left: clamp(8px, 1.2vw, 16px);
+  left: clamp(-56px, -3.8vw, -34px);
 }
 
 .works-showcase-nav-side.is-next {
-  right: clamp(8px, 1.2vw, 16px);
+  right: clamp(-56px, -3.8vw, -34px);
 }
 
 .works-showcase-nav:hover:not(:disabled) {
@@ -2473,7 +2473,7 @@ video {
   }
 
   .hero-scrub {
-    height: 102vh;
+    height: 108vh;
   }
 
   .hero-works-stage {
