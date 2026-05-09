@@ -833,7 +833,9 @@ export function App() {
   const showcaseCount = isPhoneViewport ? worksPages.length : works.length;
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
-  const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
+  const photoBeltItems = isPhoneViewport
+    ? photoArchiveItems
+    : [...photoArchiveItems, ...photoArchiveItems];
   const isPhotoArchivePaused = isPhotoArchiveDragging || Boolean(lightboxImage);
   const useHeroAutoplayMode = isPhoneViewport;
 
@@ -1248,9 +1250,9 @@ export function App() {
       const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = clamp01(-rect.top / scrollableRange);
       const showcaseProgress = clamp01((progress - showcaseStart) / showcaseSpan);
-      const storyTop = storySectionRef.current?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-      const storyIncoming = storyTop <= window.innerHeight * 0.98;
-      const showcasePhase = progress > showcaseStart && (!isPhoneViewport || !storyIncoming);
+      const stageLeavingViewport = rect.bottom <= window.innerHeight * 0.18;
+      const showcasePhase =
+        progress > showcaseStart && (!isPhoneViewport || !stageLeavingViewport);
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
@@ -2888,7 +2890,7 @@ export function App() {
                         <img
                           src={resolvePhotoSrc(photo.src)}
                           alt={photo.title[lang]}
-                          loading={index < 8 ? "eager" : "lazy"}
+                          loading={index < (isPhoneViewport ? 2 : 8) ? "eager" : "lazy"}
                         />
                       </figure>
                     </button>
