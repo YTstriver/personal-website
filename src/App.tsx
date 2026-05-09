@@ -704,10 +704,31 @@ const removeQueryAndHash = (value: string) => value.replace(/[?#].*$/, "");
 const isAbsoluteUrl = (value: string) => /^https?:\/\//i.test(value);
 const removeVideosPrefix = (value: string) => value.replace(/^\/?videos\//, "");
 
+const encodePathSegment = (segment: string) => {
+  if (!segment) return segment;
+  try {
+    return encodeURIComponent(decodeURIComponent(segment));
+  } catch {
+    return encodeURIComponent(segment);
+  }
+};
+
+const encodePathPreservingQueryAndHash = (value: string) => {
+  const match = value.match(/^([^?#]*)([?#].*)?$/);
+  const pathname = match?.[1] ?? value;
+  const suffix = match?.[2] ?? "";
+  const encodedPath = pathname
+    .split("/")
+    .map((segment) => encodePathSegment(segment))
+    .join("/");
+  return `${encodedPath}${suffix}`;
+};
+
 const joinBaseAndPath = (base: string, path: string) => {
   const normalizedBase = stripTrailingSlash(base);
   const normalizedPath = stripLeadingSlash(path);
-  return `${normalizedBase}/${normalizedPath}`;
+  const encodedPath = encodePathPreservingQueryAndHash(normalizedPath);
+  return `${normalizedBase}/${encodedPath}`;
 };
 
 const resolvePublicAssetPath = (assetPath: string) => {
@@ -1220,7 +1241,6 @@ export function App() {
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
     const showcaseStart = isPhoneViewport ? 0.22 : 0.2;
-    const showcaseEnd = isPhoneViewport ? 1.001 : 0.992;
     const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
     const syncProgress = () => {
@@ -1230,9 +1250,7 @@ export function App() {
       const showcaseProgress = clamp01((progress - showcaseStart) / showcaseSpan);
       const storyTop = storySectionRef.current?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
       const storyIncoming = storyTop <= window.innerHeight * 0.98;
-      const showcasePhase = isPhoneViewport
-        ? progress > showcaseStart && !storyIncoming
-        : progress > showcaseStart && progress < showcaseEnd;
+      const showcasePhase = progress > showcaseStart && (!isPhoneViewport || !storyIncoming);
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
