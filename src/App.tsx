@@ -824,6 +824,8 @@ export function App() {
   const backgroundMusicFadeRef = useRef<number | null>(null);
   const skipNextBackgroundMusicClickRef = useRef(false);
   const backgroundMusicUnlockPendingRef = useRef(false);
+  const photoArchiveDraggingRef = useRef(false);
+  const photoArchiveLightboxOpenRef = useRef(false);
 
   const t = content[lang];
   // Keep hero loop on same-origin public path: current OSS bucket does not contain hero loop files.
@@ -833,9 +835,7 @@ export function App() {
   const showcaseCount = isPhoneViewport ? worksPages.length : works.length;
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
-  const photoBeltItems = isPhoneViewport
-    ? photoArchiveItems
-    : [...photoArchiveItems, ...photoArchiveItems];
+  const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
   const isPhotoArchivePaused = isPhotoArchiveDragging || Boolean(lightboxImage);
   const useHeroAutoplayMode = isPhoneViewport;
 
@@ -1465,6 +1465,54 @@ export function App() {
       window.removeEventListener("pointercancel", endDrag);
     };
   }, []);
+
+  useEffect(() => {
+    photoArchiveDraggingRef.current = isPhotoArchiveDragging;
+  }, [isPhotoArchiveDragging]);
+
+  useEffect(() => {
+    photoArchiveLightboxOpenRef.current = Boolean(lightboxImage);
+  }, [lightboxImage]);
+
+  useEffect(() => {
+    const stage = photoBeltStageRef.current;
+    if (!stage || !isPhoneViewport) return;
+
+    let rafId: number | null = null;
+    let lastTimestamp = 0;
+    const speedPxPerSecond = 12;
+
+    const tick = (timestamp: number) => {
+      if (lastTimestamp === 0) {
+        lastTimestamp = timestamp;
+      }
+
+      const deltaSeconds = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      const shouldPause = photoArchiveDraggingRef.current || photoArchiveLightboxOpenRef.current;
+      if (!shouldPause) {
+        const loopWidth = stage.scrollWidth / 2;
+        if (loopWidth > 0) {
+          stage.scrollLeft += speedPxPerSecond * deltaSeconds;
+          if (stage.scrollLeft >= loopWidth) {
+            stage.scrollLeft -= loopWidth;
+          }
+        }
+      }
+
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    stage.scrollLeft = 0;
+    rafId = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [isPhoneViewport, photoBeltItems.length]);
 
   useEffect(() => {
     const section = bimSectionRef.current;
@@ -2863,6 +2911,7 @@ export function App() {
               role="list"
               aria-label={lang === "zh" ? "武汉照片档案" : "Wuhan photo archive"}
             >
+              <div className="photo-belt-mask" aria-hidden="true" />
               <div className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""}`}>
                 {photoBeltItems.map((photo, index) => (
                   <article
@@ -2891,6 +2940,8 @@ export function App() {
                           src={resolvePhotoSrc(photo.src)}
                           alt={photo.title[lang]}
                           loading={index < (isPhoneViewport ? 2 : 8) ? "eager" : "lazy"}
+                          decoding="async"
+                          fetchPriority={index < (isPhoneViewport ? 2 : 8) ? "high" : "auto"}
                         />
                       </figure>
                     </button>
