@@ -2101,7 +2101,7 @@ export function App() {
     const sectionTop = section.getBoundingClientRect().top + window.scrollY;
     const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
     const showcaseProgress =
-      chapterIndex === 3 ? (isPhone ? 0.68 : 0.42) : chapterIndex === 0 ? (isPhone ? 0.82 : 0.34) : 0.34;
+      chapterIndex === 3 ? (isPhone ? 0.68 : 0.42) : chapterIndex === 0 ? (isPhone ? 0.76 : 0.34) : 0.34;
 
     window.scrollTo({
       top: sectionTop + scrollableRange * showcaseProgress,
