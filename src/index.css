@@ -1714,7 +1714,7 @@ video {
   position: absolute;
 }
 
-.photo-belt-stage {
+.photo-belt-shell {
   --photo-belt-gap: clamp(6px, 0.9vw, 10px);
   --film-rail-size: clamp(12px, 1.5vw, 16px);
   --belt-pad-x: clamp(8px, 1.1vw, 12px);
@@ -1724,7 +1724,13 @@ video {
   border-radius: 18px;
   cursor: default;
   margin-top: 0;
-  overflow-x: hidden;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+.photo-belt-stage {
+  overflow-x: auto;
   overflow-y: hidden;
   padding:
     calc(var(--film-rail-size) + var(--belt-pad-y))
@@ -1733,23 +1739,14 @@ video {
   scrollbar-width: none;
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
-  z-index: 2;
 }
 
 .photo-belt-stage::-webkit-scrollbar {
   display: none;
 }
 
-.photo-belt-stage.is-dragging {
+.photo-belt-shell.is-dragging {
   cursor: grabbing;
-}
-
-.photo-belt-stage::before {
-  content: none;
-}
-
-.photo-belt-stage::after {
-  content: none;
 }
 
 .photo-belt-mask {
@@ -1873,7 +1870,7 @@ video {
 }
 
 @media (max-width: 860px) {
-  .photo-belt-stage {
+  .photo-belt-shell {
     --photo-belt-gap: 6px;
     --film-rail-size: 11px;
     --belt-pad-x: 8px;
@@ -1896,15 +1893,18 @@ video {
     padding: 14px;
   }
 
-  .photo-belt-stage {
+  .photo-belt-shell {
     --photo-belt-gap: 5px;
     border-radius: 14px;
     --film-rail-size: 10px;
     --belt-pad-x: 7px;
     --belt-pad-y: 7px;
+  }
+
+  .photo-belt-stage {
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     touch-action: pan-x;
   }
 
