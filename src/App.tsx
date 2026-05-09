@@ -1242,7 +1242,7 @@ export function App() {
     }
 
     const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
-    const showcaseStart = isPhoneViewport ? 0.22 : 0.2;
+    const showcaseStart = isPhoneViewport ? 0.72 : 0.2;
     const showcaseSpan = Math.max(1 - showcaseStart, 0.001);
 
     const syncProgress = () => {
@@ -1250,9 +1250,8 @@ export function App() {
       const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
       const progress = clamp01(-rect.top / scrollableRange);
       const showcaseProgress = clamp01((progress - showcaseStart) / showcaseSpan);
-      const stageLeavingViewport = rect.bottom <= window.innerHeight * 0.18;
-      const showcasePhase =
-        progress > showcaseStart && (!isPhoneViewport || !stageLeavingViewport);
+      const stagePastViewport = rect.bottom <= 0;
+      const showcasePhase = progress >= showcaseStart && !stagePastViewport;
       section.style.setProperty("--works-stage-progress", progress.toFixed(4));
       section.style.setProperty("--works-showcase-progress", showcaseProgress.toFixed(4));
       section.dataset.phase = showcasePhase ? "showcase" : "intro";
@@ -1480,7 +1479,7 @@ export function App() {
 
     let rafId: number | null = null;
     let lastTimestamp = 0;
-    const speedPxPerSecond = 12;
+    const speedPxPerSecond = 5;
 
     const tick = (timestamp: number) => {
       if (lastTimestamp === 0) {
@@ -2102,7 +2101,7 @@ export function App() {
     const sectionTop = section.getBoundingClientRect().top + window.scrollY;
     const scrollableRange = Math.max(section.offsetHeight - window.innerHeight, 1);
     const showcaseProgress =
-      chapterIndex === 3 ? (isPhone ? 0.68 : 0.42) : chapterIndex === 0 ? (isPhone ? 0.58 : 0.34) : 0.34;
+      chapterIndex === 3 ? (isPhone ? 0.68 : 0.42) : chapterIndex === 0 ? (isPhone ? 0.82 : 0.34) : 0.34;
 
     window.scrollTo({
       top: sectionTop + scrollableRange * showcaseProgress,
@@ -2905,48 +2904,50 @@ export function App() {
           </div>
 
           <div className="photo-archive-panel">
-            <div
-              className={`photo-belt-stage ${isPhotoArchiveDragging ? "is-dragging" : ""}`}
-              ref={photoBeltStageRef}
-              role="list"
-              aria-label={lang === "zh" ? "武汉照片档案" : "Wuhan photo archive"}
-            >
+            <div className={`photo-belt-shell ${isPhotoArchiveDragging ? "is-dragging" : ""}`}>
               <div className="photo-belt-mask" aria-hidden="true" />
-              <div className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""}`}>
-                {photoBeltItems.map((photo, index) => (
-                  <article
-                    key={`${photo.id}-${index}`}
-                    role="listitem"
-                    className="photo-belt-item"
-                  >
-                    <button
-                      className="photo-belt-trigger"
-                      type="button"
-                      onClick={() => {
-                        setLightboxVideo(null);
-                        setLightboxImage({
-                          src: resolvePhotoSrc(photo.src),
-                          title: photo.title[lang],
-                        });
-                      }}
-                      aria-label={
-                        lang === "zh"
-                          ? `查看《${photo.title.zh}》大图`
-                          : `Open enlarged view of ${photo.title.en}`
-                      }
+              <div
+                className="photo-belt-stage"
+                ref={photoBeltStageRef}
+                role="list"
+                aria-label={lang === "zh" ? "武汉照片档案" : "Wuhan photo archive"}
+              >
+                <div className={`photo-belt-track ${isPhotoArchivePaused ? "is-paused" : ""}`}>
+                  {photoBeltItems.map((photo, index) => (
+                    <article
+                      key={`${photo.id}-${index}`}
+                      role="listitem"
+                      className="photo-belt-item"
                     >
-                      <figure className="photo-belt-media">
-                        <img
-                          src={resolvePhotoSrc(photo.src)}
-                          alt={photo.title[lang]}
-                          loading={index < (isPhoneViewport ? 2 : 8) ? "eager" : "lazy"}
-                          decoding="async"
-                          fetchPriority={index < (isPhoneViewport ? 2 : 8) ? "high" : "auto"}
-                        />
-                      </figure>
-                    </button>
-                  </article>
-                ))}
+                      <button
+                        className="photo-belt-trigger"
+                        type="button"
+                        onClick={() => {
+                          setLightboxVideo(null);
+                          setLightboxImage({
+                            src: resolvePhotoSrc(photo.src),
+                            title: photo.title[lang],
+                          });
+                        }}
+                        aria-label={
+                          lang === "zh"
+                            ? `查看《${photo.title.zh}》大图`
+                            : `Open enlarged view of ${photo.title.en}`
+                        }
+                      >
+                        <figure className="photo-belt-media">
+                          <img
+                            src={resolvePhotoSrc(photo.src)}
+                            alt={photo.title[lang]}
+                            loading={index < (isPhoneViewport ? 2 : 8) ? "eager" : "lazy"}
+                            decoding="async"
+                            fetchPriority={index < (isPhoneViewport ? 2 : 8) ? "high" : "auto"}
+                          />
+                        </figure>
+                      </button>
+                    </article>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
