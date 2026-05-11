@@ -1585,8 +1585,14 @@ export function App() {
       stage.scrollLeft += delta;
     };
 
+    const handlePointerLeave = () => {
+      if (pointerActive || dragging) return;
+      setIsPhotoArchiveUserPaused(false);
+    };
+
     stage.addEventListener("pointerdown", beginPointerDrag, { passive: true });
     stage.addEventListener("pointermove", handlePointerMove, { passive: false });
+    stage.addEventListener("pointerleave", handlePointerLeave, { passive: true });
     window.addEventListener("pointerup", endPointerDrag, { passive: true });
     window.addEventListener("pointercancel", endPointerDrag, { passive: true });
     stage.addEventListener("click", handleClickCapture, true);
@@ -1598,6 +1604,7 @@ export function App() {
       }
       stage.removeEventListener("pointerdown", beginPointerDrag);
       stage.removeEventListener("pointermove", handlePointerMove);
+      stage.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("pointerup", endPointerDrag);
       window.removeEventListener("pointercancel", endPointerDrag);
       stage.removeEventListener("click", handleClickCapture, true);
