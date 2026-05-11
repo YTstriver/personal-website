@@ -797,6 +797,7 @@ export function App() {
     title: string;
   } | null>(null);
   const [isPhotoArchiveDragging, setIsPhotoArchiveDragging] = useState(false);
+  const [isPhotoArchiveUserPaused, setIsPhotoArchiveUserPaused] = useState(false);
   const [failedPreviewPosters, setFailedPreviewPosters] = useState<Record<string, true>>({});
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isBackgroundMusicEnabled, setIsBackgroundMusicEnabled] = useState(() => {
@@ -826,6 +827,7 @@ export function App() {
   const backgroundMusicUnlockPendingRef = useRef(false);
   const photoArchiveDraggingRef = useRef(false);
   const photoArchiveLightboxOpenRef = useRef(false);
+  const photoArchiveSuppressClickRef = useRef(false);
 
   const t = content[lang];
   // Keep hero loop on same-origin public path: current OSS bucket does not contain hero loop files.
@@ -836,7 +838,8 @@ export function App() {
   const urbanPages = chunkByPage(urbanEscapeVideos, SHOWCASE_PAGE_SIZE);
   const bimPages = chunkByPage(bimCaseVideos, SHOWCASE_PAGE_SIZE);
   const photoBeltItems = [...photoArchiveItems, ...photoArchiveItems];
-  const isPhotoArchivePaused = isPhotoArchiveDragging || Boolean(lightboxImage);
+  const isPhotoArchivePaused =
+    isPhotoArchiveDragging || Boolean(lightboxImage) || isPhotoArchiveUserPaused;
   const useHeroAutoplayMode = isPhoneViewport;
 
   const renderVideoPreview = (params: {
@@ -1451,17 +1454,11 @@ export function App() {
     stage.addEventListener("touchstart", beginDrag, { passive: true });
     stage.addEventListener("touchend", endDrag, { passive: true });
     stage.addEventListener("touchcancel", endDrag, { passive: true });
-    stage.addEventListener("pointerdown", beginDrag, { passive: true });
-    window.addEventListener("pointerup", endDrag, { passive: true });
-    window.addEventListener("pointercancel", endDrag, { passive: true });
 
     return () => {
       stage.removeEventListener("touchstart", beginDrag);
       stage.removeEventListener("touchend", endDrag);
       stage.removeEventListener("touchcancel", endDrag);
-      stage.removeEventListener("pointerdown", beginDrag);
-      window.removeEventListener("pointerup", endDrag);
-      window.removeEventListener("pointercancel", endDrag);
     };
   }, []);
 
@@ -1512,6 +1509,101 @@ export function App() {
       }
     };
   }, [isPhoneViewport, photoBeltItems.length]);
+
+  useEffect(() => {
+    const stage = photoBeltStageRef.current;
+    if (!stage || isPhoneViewport) return;
+
+    let pointerActive = false;
+    let dragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+    let suppressClickTimer: number | null = null;
+    const dragThreshold = 6;
+
+    const beginPointerDrag = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      pointerActive = true;
+      dragging = false;
+      startX = event.clientX;
+      startScrollLeft = stage.scrollLeft;
+      if (suppressClickTimer !== null) {
+        window.clearTimeout(suppressClickTimer);
+        suppressClickTimer = null;
+      }
+      photoArchiveSuppressClickRef.current = false;
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!pointerActive) return;
+      const deltaX = event.clientX - startX;
+
+      if (!dragging && Math.abs(deltaX) >= dragThreshold) {
+        dragging = true;
+        setIsPhotoArchiveDragging(true);
+        setIsPhotoArchiveUserPaused(true);
+      }
+
+      if (!dragging) return;
+      stage.scrollLeft = startScrollLeft - deltaX;
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+    };
+
+    const endPointerDrag = () => {
+      if (!pointerActive) return;
+      pointerActive = false;
+
+      if (dragging) {
+        photoArchiveSuppressClickRef.current = true;
+        suppressClickTimer = window.setTimeout(() => {
+          photoArchiveSuppressClickRef.current = false;
+          suppressClickTimer = null;
+        }, 140);
+      }
+
+      dragging = false;
+      setIsPhotoArchiveDragging(false);
+    };
+
+    const handleClickCapture = (event: MouseEvent) => {
+      if (!photoArchiveSuppressClickRef.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      photoArchiveSuppressClickRef.current = false;
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      const delta =
+        Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (Math.abs(delta) < 0.5) return;
+      if (event.cancelable) {
+        event.preventDefault();
+      }
+      setIsPhotoArchiveUserPaused(true);
+      stage.scrollLeft += delta;
+    };
+
+    stage.addEventListener("pointerdown", beginPointerDrag, { passive: true });
+    stage.addEventListener("pointermove", handlePointerMove, { passive: false });
+    window.addEventListener("pointerup", endPointerDrag, { passive: true });
+    window.addEventListener("pointercancel", endPointerDrag, { passive: true });
+    stage.addEventListener("click", handleClickCapture, true);
+    stage.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      if (suppressClickTimer !== null) {
+        window.clearTimeout(suppressClickTimer);
+      }
+      stage.removeEventListener("pointerdown", beginPointerDrag);
+      stage.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", endPointerDrag);
+      window.removeEventListener("pointercancel", endPointerDrag);
+      stage.removeEventListener("click", handleClickCapture, true);
+      stage.removeEventListener("wheel", handleWheel);
+    };
+  }, [isPhoneViewport]);
 
   useEffect(() => {
     const section = bimSectionRef.current;
@@ -2923,6 +3015,9 @@ export function App() {
                         className="photo-belt-trigger"
                         type="button"
                         onClick={() => {
+                          if (!isPhoneViewport) {
+                            setIsPhotoArchiveUserPaused(true);
+                          }
                           setLightboxVideo(null);
                           setLightboxImage({
                             src: resolvePhotoSrc(photo.src),

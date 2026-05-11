@@ -1722,7 +1722,7 @@ video {
   background: radial-gradient(circle at 50% 42%, rgba(89, 197, 255, 0.14), transparent 72%);
   border: 1px dashed rgba(171, 222, 255, 0.22);
   border-radius: 18px;
-  cursor: default;
+  cursor: grab;
   margin-top: 0;
   overflow: hidden;
   position: relative;
@@ -1746,6 +1746,10 @@ video {
 }
 
 .photo-belt-shell.is-dragging {
+  cursor: grabbing;
+}
+
+.photo-belt-shell.is-dragging .photo-belt-trigger {
   cursor: grabbing;
 }
 
@@ -1896,6 +1900,7 @@ video {
   .photo-belt-shell {
     --photo-belt-gap: 5px;
     border-radius: 14px;
+    cursor: default;
     --film-rail-size: 10px;
     --belt-pad-x: 7px;
     --belt-pad-y: 7px;
