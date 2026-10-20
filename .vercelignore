@@ -1,0 +1,66 @@
+# Only build inputs and runtime assets may leave this checkout.
+/*
+!.vercelignore
+!package.json
+!package-lock.json
+!index.html
+!vite.config.ts
+!vercel.json
+!tsconfig.json
+!tsconfig.app.json
+!tsconfig.node.json
+!eslint.config.js
+!postcss.config.js
+!tailwind.config.js
+!src
+!api
+!server
+!public
+
+# Keep local evidence, documents, credentials and backups out of allowed trees.
+**/.DS_Store
+**/.env*
+**/.vercel
+**/.git
+**/.npmrc
+**/.yarnrc*
+**/.ssh
+**/.aws
+**/.config
+**/*.pem
+**/*.key
+**/id_rsa*
+**/id_ed25519*
+**/credentials*
+**/auth.json
+**/*.db
+**/*.sqlite*
+**/*.log
+**/*.bak*
+**/*.test.*
+**/*.spec.*
+**/README*.md
+**/AGENTS.md
+**/*.docx
+**/tmp
+**/output
+**/.playwright-cli
+**/test-results
+**/playwright-report
+**/__tests__
+
+# The API imports only this server module.
+server/*
+!server/site-views.js
+
+# Exclude local source videos that exceed Vercel static size limit.
+# Keep only hero loops that are currently served from this site.
+public/videos/*
+!public/videos/hero-loop.mp4
+!public/videos/hero-loop-scrub-hq.mp4
+!public/videos/studio
+public/videos/studio/*
+!public/videos/studio/studio-scroll-1080p.mp4
+!public/videos/studio/studio-scroll-720p.mp4
+!public/videos/studio/studio-reverse-1080p.mp4
+!public/videos/studio/studio-reverse-720p.mp4

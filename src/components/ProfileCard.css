@@ -1,0 +1,91 @@
+/* React Bits Profile Card: warm matte portrait with pointer-driven tilt. */
+.profile-card {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --pointer-from-top: .5;
+  --pointer-from-left: .5;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --profile-card-radius: 22px;
+  position: relative;
+  width: var(--profile-card-width, 260px);
+  max-width: 100%;
+  perspective: 650px;
+  transform: translate3d(0, 0, .1px);
+  isolation: isolate;
+  touch-action: pan-y;
+}
+
+.profile-card__behind {
+  position: absolute;
+  inset: 7%;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgb(223 169 95 / 40%), transparent 65%);
+  filter: blur(26px);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.profile-card[data-interacting="true"] .profile-card__behind { opacity: .65; }
+.profile-card__shell { position: relative; z-index: 1; }
+
+.profile-card__card {
+  display: grid;
+  position: relative;
+  width: 100%;
+  aspect-ratio: .718;
+  border: 1px solid rgb(110 74 44 / 25%);
+  border-radius: var(--profile-card-radius);
+  background: #786f59;
+  overflow: hidden;
+  backface-visibility: hidden;
+  box-shadow: calc(var(--pointer-from-left) * 8px - 2px) calc(var(--pointer-from-top) * 12px + 8px) 28px -12px rgb(61 40 20 / 38%);
+  transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+}
+
+.profile-card__inside {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  border-radius: inherit;
+  background-color: #d4c4aa;
+  background-image: var(--profile-card-gradient, linear-gradient(145deg, #e8dcc8 0%, #d4c4aa 55%, #aaa58e 100%));
+}
+
+.profile-card__inside > * { grid-area: 1 / 1; border-radius: inherit; pointer-events: none; }
+
+.profile-card__portrait-layer { position: absolute; inset: 0; overflow: hidden; }
+.profile-card__portrait {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  backface-visibility: hidden;
+}
+
+.profile-card__signature {
+  position: absolute;
+  bottom: 5%;
+  right: 8%;
+  z-index: 5;
+  width: 39%;
+  height: auto;
+  max-height: 14%;
+  object-fit: contain;
+  object-position: right center;
+  filter: var(--profile-card-signature-filter, brightness(0) invert(1) sepia(.25));
+  opacity: .9;
+  transform: translate3d(calc(var(--pointer-from-left) * -4px + 2px), calc(var(--pointer-from-top) * -4px + 2px), .1px);
+}
+
+.profile-card[data-motion="static"] .profile-card__card { transform: none; }
+.profile-card[data-motion="static"] .profile-card__behind { opacity: 0; }
+.profile-card[data-motion="static"] .profile-card__signature { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-card *, .profile-card *::before, .profile-card *::after { transition: none !important; }
+  .profile-card__card { transform: none; }
+}

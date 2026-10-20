@@ -1,0 +1,53 @@
+/* Adapted from React Bits DepthCarousel; see DepthCarousel.LICENSE.md. */
+.depth-carousel {
+  position: relative; width: 100%; height: 100%; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+  perspective: var(--dc-perspective, 1400px); perspective-origin: var(--dc-center-x, 50%) 50%;
+  touch-action: pan-y; outline: none; user-select: none; -webkit-user-select: none;
+}
+.depth-carousel:focus-visible { outline: 2px solid #bc7248; outline-offset: 4px; border-radius: 14px; }
+.depth-carousel__stage { position: absolute; inset: 0; transform-style: preserve-3d; }
+.depth-carousel__card {
+  position: absolute; top: 50%; left: var(--dc-center-x, 50%); padding: 0; border: 0; border-radius: 14px;
+  transform-origin: center center; transform: translate(-50%, -50%); overflow: hidden;
+  background: #261a14; box-shadow: 0 18px 35px -16px rgba(58, 32, 17, .46), 0 5px 14px -7px rgba(58, 32, 17, .22);
+  cursor: pointer;
+}
+.depth-carousel__card:focus-visible { outline: 3px solid #cc7946; outline-offset: 3px; }
+.depth-carousel__img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; }
+.depth-carousel__placeholder { display: grid; place-items: center; height: 100%; padding: 24px; box-sizing: border-box; font-size: 22px; color: #fff0df; background: linear-gradient(140deg, #53392b, #261a14); }
+.depth-carousel__tint { position: absolute; inset: 0; opacity: 0; background: #422a1b; pointer-events: none; mix-blend-mode: multiply; }
+.depth-carousel__arrow {
+  position: absolute; left: var(--dc-center-x, 50%); transform: translateX(-50%); z-index: 3000;
+  display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  border: 1px solid rgba(153, 88, 45, .3); border-radius: 999px;
+  color: #89502d; background: rgba(255, 241, 224, .72); backdrop-filter: blur(6px); cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.depth-carousel__arrow--prev { top: 2px; }
+.depth-carousel__arrow--next { bottom: 2px; }
+.depth-carousel__arrow:hover { background: rgba(255, 238, 215, .96); border-color: #ac6538; }
+.depth-carousel__arrow:focus-visible,
+.depth-carousel__dot:focus-visible { outline: 2px solid #bc7248; outline-offset: 3px; }
+.depth-carousel__dots { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 2px; max-height: 100%; }
+.depth-carousel__dot { display: grid; place-items: center; flex: 0 1 24px; min-height: 0; width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; }
+.depth-carousel__dot::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: rgba(157, 95, 57, .3); transition: height .2s, background .2s; }
+.depth-carousel__dot.is-active::before { height: 16px; background: #ab673d; }
+.depth-carousel__play {
+  position: absolute; top: calc(50% - var(--dc-tail, 0px) / 2); left: var(--dc-center-x, 50%); transform: translate(-50%, -50%); z-index: 3000;
+  display: grid; place-items: center; width: 58px; height: 58px; padding: 0; border: 1.5px solid rgba(255, 244, 232, .92);
+  border-radius: 50%; color: #fff4e8; background: rgba(38, 26, 20, .3); box-shadow: 0 4px 20px rgba(0,0,0,.15); cursor: pointer;
+  transition: background .2s, opacity .2s;
+}
+.depth-carousel__play svg { margin-left: 3px; }
+.depth-carousel__play:hover { background: rgba(38, 26, 20, .58); }
+.depth-carousel__play:focus-visible { outline: 2px solid #ffdbb9; outline-offset: 4px; }
+.depth-carousel__play:disabled { opacity: .45; cursor: default; }
+.depth-carousel__arrow:disabled,
+.depth-carousel__dot:disabled { cursor: default; }
+.depth-carousel__status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (min-width: 761px) {
+  .depth-carousel { --dc-center-x: calc(50% - 20px); }
+  .depth-carousel__dots { right: auto; left: calc(var(--dc-center-x) + var(--dc-card-width, 312px) / 2 + 16px); }
+}
+@media (max-width: 420px) { .depth-carousel__play { width: 50px; height: 50px; } }

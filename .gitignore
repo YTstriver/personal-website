@@ -12,3 +12,27 @@ public/videos/*.mp4
 
 backups/
 public/videos/hero-loop-hevc-original.mp4
+
+# Local review evidence, generated scratch files and private requirements.
+/tmp/
+/output/
+/.playwright-cli/
+/design-qa.md
+/需求.docx
+AGENTS.md
+*.log
+**/*.bak*
+**/.npmrc
+**/.yarnrc*
+**/*.pem
+**/*.key
+**/id_rsa*
+**/id_ed25519*
+**/credentials*
+
+# Studio playback derivatives are the only publishable videos in this folder.
+public/videos/studio/*
+!public/videos/studio/studio-scroll-1080p.mp4
+!public/videos/studio/studio-scroll-720p.mp4
+!public/videos/studio/studio-reverse-1080p.mp4
+!public/videos/studio/studio-reverse-720p.mp4

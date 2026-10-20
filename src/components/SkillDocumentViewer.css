@@ -1,0 +1,34 @@
+.studio-media-dialog.skill-document-viewer {
+  --studio-ink: #351d12;
+  --studio-muted: #6a574a;
+  position: fixed;
+  inset: auto;
+  display: none;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 24px 22px 12px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--studio-ink);
+}
+.studio-media-dialog.skill-document-viewer[open] { display: flex; flex-direction: column; }
+.studio-media-dialog.skill-document-viewer::backdrop { background: transparent; backdrop-filter: none; }
+.skill-document-viewer__stage { display: grid; place-items: center; flex: 1; min-height: 0; padding: 22px 8px 10px; perspective: 1100px; }
+.skill-document-viewer__image { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; min-height: 0; object-fit: contain; border-radius: 10px; filter: drop-shadow(0 12px 18px rgb(53 29 18 / 28%)); backface-visibility: hidden; opacity: 0; }
+.skill-document-viewer__image[data-ready] { animation: skill-document-unfold 430ms cubic-bezier(.2,.8,.2,1) both; }
+.skill-document-viewer[data-closing] .skill-document-viewer__image[data-ready] { animation: skill-document-fold 220ms ease both; }
+.studio-media-dialog .skill-document-viewer__close { position: absolute; z-index: 3; top: 9px; right: 9px; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid rgb(145 91 50 / 23%); border-radius: 50%; background: rgb(255 246 231 / 90%); color: var(--studio-muted); }
+.skill-document-viewer__navigation { display: flex; align-items: center; justify-content: center; align-self: center; gap: 22px; flex: 0 0 auto; padding: 5px 8px; border-radius: 24px; background: rgb(255 246 231 / 90%); font-size: 10px; font-variant-numeric: tabular-nums; color: var(--studio-muted); }
+.studio-media-dialog .skill-document-viewer__navigation button { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid rgb(145 91 50 / 23%); border-radius: 50%; background: transparent; }
+@keyframes skill-document-unfold { from { opacity: 0; transform: rotateY(-72deg) scale(.88); } to { opacity: 1; transform: rotateY(0) scale(1); } }
+@keyframes skill-document-fold { to { opacity: 0; transform: rotateY(65deg) scale(.9); } }
+@media (max-width: 760px) { .studio-media-dialog.skill-document-viewer { padding: 18px 10px 8px; border-radius: 13px; } .skill-document-viewer__stage { padding-inline: 2px; } }
+@keyframes skill-document-gentle-unfold { from { opacity: .25; transform: rotateY(-42deg) scale(.96); } to { opacity: 1; transform: rotateY(0) scale(1); } }
+@keyframes skill-document-gentle-fold { to { opacity: 0; transform: rotateY(20deg) scale(.97); } }
+@media (prefers-reduced-motion: reduce) {
+  .skill-document-viewer__image[data-ready] { animation: skill-document-gentle-unfold 400ms ease-out both; }
+  .skill-document-viewer[data-closing] .skill-document-viewer__image[data-ready] { animation: skill-document-gentle-fold 160ms ease both; }
+}

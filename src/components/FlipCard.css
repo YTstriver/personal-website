@@ -1,0 +1,43 @@
+/* React Bits Flip Card, adapted for the cartoon avatar and signed portrait. */
+.flip-card {
+  --fc-glare: .22;
+  position: relative;
+  width: var(--flip-card-width, 260px);
+  max-width: 100%;
+  aspect-ratio: 900 / 1260;
+  border-radius: 22px;
+  outline: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: pan-y;
+}
+.flip-card[data-dragging="true"] { cursor: grabbing; }
+.flip-card[data-enabled="false"] { cursor: default; }
+.flip-card__shadow { position: absolute; inset: 12% 9% -4%; border-radius: inherit; background: rgb(61 40 20 / 30%); filter: blur(20px); pointer-events: none; }
+.flip-card__rotor { position: absolute; inset: 0; transform-style: preserve-3d; }
+.flip-card__face { position: absolute; inset: 0; overflow: hidden; border-radius: 22px; border: 1px solid rgb(110 74 44 / 25%); background: linear-gradient(145deg, #e8dcc8 0%, #d4c4aa 55%, #aaa58e 100%); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-card__face--back { transform: rotateY(180deg); }
+.flip-card__glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle farthest-side at var(--fc-gx, 50%) var(--fc-gy, 50%),
+    rgba(255, 255, 255, var(--fc-glare)) 0%,
+    rgba(255, 255, 255, calc(var(--fc-glare) * .76)) 12%,
+    rgba(255, 255, 255, calc(var(--fc-glare) * .5)) 26%,
+    rgba(255, 255, 255, calc(var(--fc-glare) * .28)) 42%,
+    rgba(255, 255, 255, calc(var(--fc-glare) * .12)) 60%,
+    rgba(255, 255, 255, calc(var(--fc-glare) * .04)) 78%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: var(--fc-sheen, 0);
+  pointer-events: none;
+}
+.flip-card__portrait, .flip-card__cartoon { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+.flip-card__portrait { object-position: center bottom; }
+.flip-card__cartoon { object-position: center center; }
+.flip-card__name { position: absolute; bottom: 6%; right: 8%; color: #fff1dc; font-size: clamp(12px, 1.05vw, 17px); font-weight: 500; line-height: 1.2; letter-spacing: .12em; text-shadow: 0 1px 4px rgb(35 24 15 / 35%); pointer-events: none; }
+.flip-card__signature { position: absolute; bottom: 5%; right: 8%; width: 39%; height: auto; max-height: 14%; object-fit: contain; filter: brightness(0) invert(1) sepia(.25); opacity: .9; pointer-events: none; -webkit-user-drag: none; }
+.flip-card[data-enabled="false"] .flip-card__glare { opacity: 0; }

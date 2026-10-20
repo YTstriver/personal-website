@@ -1,0 +1,48 @@
+.studio-background {
+  background: #ece2d5;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.studio-background-video,
+.studio-background-still {
+  height: 100%;
+  inset: 0;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  width: 100%;
+}
+
+.studio-background-video { opacity: 0; }
+.studio-background[data-display="video"]:not([data-playback-source="reverse"]) .studio-background-video--forward,
+.studio-background[data-display="video"][data-playback-source="reverse"] .studio-background-video--reverse { opacity: 1; }
+.studio-background[data-display="video"] .studio-background-still { opacity: 0; }
+
+html[data-studio-experience="true"] {
+  --studio-arrival-duration: 650ms;
+  --studio-arrival-ease: cubic-bezier(.25, .1, .25, 1);
+  scroll-behavior: auto;
+  scrollbar-gutter: stable;
+}
+html[data-studio-experience="true"] body { background: #ece2d5; }
+html[data-studio-experience="true"] body::before { opacity: 0.015; }
+/* Chapter positioning preserves semantic progress across layout changes. */
+html[data-studio-experience="true"] .studio-main { overflow-anchor: none; }
+
+html[data-studio-static="false"] .studio-scene { min-height: 0; }
+
+@media (max-width: 760px) {
+  .studio-background-video,
+  .studio-background-still { object-position: 65% center; }
+  .studio-background[data-chapter="end"] .studio-background-video,
+  .studio-background[data-chapter="end"] .studio-background-still { object-position: 25% center; }
+  html[data-studio-static="false"] .studio-background-video,
+  html[data-studio-static="false"] .studio-background-still {
+    transition: object-position 750ms ease;
+  }
+}

@@ -1,0 +1,83 @@
+.studio-chapter-nav {
+  position: fixed;
+  top: 50%;
+  right: 21px;
+  transform: translate(calc(100% + 28px), -50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 700ms cubic-bezier(.22, 1, .36, 1), opacity 500ms ease, visibility 0s linear 700ms;
+}
+
+.studio-chapter-nav[data-visible="true"] {
+  transform: translate(0, -50%);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 700ms cubic-bezier(.22, 1, .36, 1) 100ms, opacity 500ms ease 100ms, visibility 0s;
+}
+
+.studio-chapter-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 39px;
+  color: #ffcba5;
+  border-radius: 4px;
+}
+
+.studio-current-label {
+  --studio-nav-pop-scale: 1.18;
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .015em;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 1px 7px rgb(55 29 13 / 80%);
+}
+
+.studio-nav-dot {
+  --studio-nav-pop-scale: 1.6;
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 1px 4px rgb(35 17 8 / 35%);
+  transition: width .25s ease, height .25s ease;
+}
+
+.studio-nav-dot[data-distance="2"] { width: 6px; height: 6px; }
+.studio-nav-dot[data-distance="3"] { width: 4.5px; height: 4.5px; }
+.studio-nav-dot[data-distance="4"] { width: 3.5px; height: 3.5px; }
+.studio-nav-dot[data-distance="5"] { width: 3px; height: 3px; }
+
+.studio-chapter-link:is(:hover, :focus-visible) > span {
+  animation: studio-nav-pop 620ms cubic-bezier(.25, .6, .35, 1) both;
+}
+
+@keyframes studio-nav-pop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  26% { transform: translateY(-4px) scale(var(--studio-nav-pop-scale)); }
+  48% { transform: translateY(2px) scale(.96); }
+  70% { transform: translateY(-1px) scale(1.06); }
+  86% { transform: translateY(.5px) scale(.99); }
+}
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .studio-chapter-nav { right: 8px; }
+}
+
+@media (max-width: 760px) {
+  .studio-chapter-nav { right: 5px; width: 58px; }
+  .studio-chapter-link { width: 58px; height: 43px; }
+}

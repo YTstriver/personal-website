@@ -1,0 +1,86 @@
+.studio-ending {
+  width: 100%;
+  min-width: 0;
+  color: var(--studio-ink, #351d12);
+}
+
+.studio-chapter--end .studio-ending .studio-chapter-header h2 {
+  font-size: clamp(38px, 3.7vw, 64px);
+  line-height: 1.16;
+  letter-spacing: -.035em;
+}
+
+.studio-chapter--end .studio-ending .studio-chapter-header > p {
+  margin-top: clamp(14px, 2vh, 20px);
+  color: #50321f;
+  font-weight: 500;
+  font-size: clamp(17px, 1.15vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.studio-ending__statement {
+  margin-top: clamp(18px, 2.6vh, 28px);
+  color: #503827;
+  font-weight: 450;
+  font-size: clamp(15px, 1.05vw, 17px);
+  line-height: 1.85;
+  letter-spacing: .02em;
+  text-wrap: pretty;
+}
+.studio-ending__statement > p { margin: 0; }
+.studio-ending__statement > p + p { margin-top: 10px; }
+
+.studio-ending .studio-contact-links.studio-contact-links--copyable {
+  margin-top: clamp(18px, 2.4vh, 26px);
+  gap: 8px;
+}
+.studio-ending .studio-contact-row { column-gap: 10px; }
+.studio-ending .studio-contact-link { font-size: 17px; line-height: 1.5; gap: 14px; padding: 6px 0; }
+
+@media (min-width: 601px) {
+  .studio-chapter--end .studio-reading::before {
+    width: 53vw;
+    background: linear-gradient(270deg, rgb(255 245 229 / 94%), rgb(255 245 229 / 90%) 72%, rgb(255 245 229 / 74%) 86%, transparent);
+  }
+  .studio-chapter--end .studio-reading-content {
+    width: min(35vw, 580px);
+    max-width: none;
+    margin-left: 55vw;
+  }
+  html[data-studio-static="false"] .studio-chapter--end .studio-reading {
+    align-items: center;
+    padding: clamp(24px, 4.5vh, 48px) 0 clamp(40px, 5.5vh, 60px);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1100px) {
+  .studio-chapter--end .studio-reading::before {
+    width: 60vw;
+    background: linear-gradient(270deg, rgb(255 245 229 / 94%), rgb(255 245 229 / 90%) 88%, transparent);
+  }
+  .studio-chapter--end .studio-reading-content { width: 43vw; margin-left: 50vw; }
+  .studio-chapter--end .studio-ending .studio-chapter-header h2 { font-size: clamp(38px, 4.4vw, 48px); }
+  .studio-chapter--end .studio-ending .studio-chapter-header > p { font-size: 17px; margin-top: 14px; }
+  .studio-ending__statement { font-size: 15px; line-height: 1.75; margin-top: 20px; }
+  .studio-ending__statement > p + p { margin-top: 9px; }
+  .studio-ending .studio-contact-links.studio-contact-links--copyable { margin-top: 20px; gap: 6px; }
+  .studio-ending .studio-contact-row { column-gap: 7px; }
+  .studio-ending .studio-contact-link { font-size: 15px; gap: 10px; padding: 5px 0; }
+}
+
+@media (min-width: 601px) and (max-height: 620px) {
+  html[data-studio-static="false"] .studio-chapter--end .studio-reading { padding: 18px 0 38px; }
+  .studio-chapter--end .studio-ending .studio-chapter-header h2 { font-size: 38px; }
+  .studio-chapter--end .studio-ending .studio-chapter-header > p { font-size: 15px; margin-top: 10px; line-height: 1.5; }
+  .studio-ending__statement { font-size: 14px; line-height: 1.6; margin-top: 14px; }
+  .studio-ending__statement > p + p { margin-top: 7px; }
+  .studio-ending .studio-contact-links.studio-contact-links--copyable { margin-top: 14px; gap: 3px; }
+  .studio-ending .studio-contact-link { font-size: 14px; padding: 4px 0; }
+}
+
+@media (max-width: 600px) {
+  .studio-ending__statement { font-size: 14px; line-height: 1.7; margin-top: 18px; }
+  .studio-ending__statement > p + p { margin-top: 8px; }
+  .studio-ending .studio-contact-links.studio-contact-links--copyable { margin-top: 18px; gap: 6px; }
+}

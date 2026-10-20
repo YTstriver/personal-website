@@ -1,0 +1,98 @@
+.skill-circular-gallery {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  color: #351d12;
+}
+
+.skill-circular-gallery__viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: clip;
+  touch-action: pan-y;
+  cursor: grab;
+  outline-offset: -3px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.skill-circular-gallery__viewport[data-dragging] { cursor: grabbing; }
+.skill-circular-gallery__canvas { display: block; width: 100%; height: 100%; }
+.skill-circular-gallery__viewport:focus-visible { outline: 1px solid #ad7150; border-radius: 8px; }
+.skill-circular-gallery[data-fallback] .skill-circular-gallery__canvas { visibility: hidden; }
+
+.skill-circular-gallery__controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 2px 6px 0;
+}
+
+.skill-circular-gallery__arrow,
+.skill-circular-gallery__activate {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.skill-circular-gallery__arrow {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 50%;
+  color: #91654c;
+  font-size: 20px;
+  line-height: 1;
+  transition: color 160ms, transform 200ms;
+}
+.skill-circular-gallery__arrow:hover { color: #351d12; transform: scale(1.12); }
+.skill-circular-gallery__arrow:disabled { opacity: .3; cursor: default; transform: none; }
+.skill-circular-gallery__arrow:focus-visible,
+.skill-circular-gallery__activate:focus-visible { outline: 1px solid #ad7150; outline-offset: 3px; }
+
+.skill-circular-gallery__caption {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+.skill-circular-gallery__activate,
+.skill-circular-gallery__label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.3;
+}
+.skill-circular-gallery__activate span { margin-left: 7px; color: #996746; }
+.skill-circular-gallery__count { color: #947965; font-size: 9px; line-height: 1; font-variant-numeric: tabular-nums; }
+.skill-circular-gallery__fallback {
+  position: absolute;
+  inset: 4% 12%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+button.skill-circular-gallery__fallback { cursor: zoom-in; }
+.skill-circular-gallery__fallback img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-circular-gallery__arrow { transition: none; }
+}
